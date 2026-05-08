@@ -8,14 +8,14 @@
 
 ## ⚡ Try it in 5 seconds
 
-Open `assessment.html` in any modern browser. Done. No build. No install.
+Open `index.html` in any modern browser. Done. No build. No install.
 
 ```bash
 # macOS / Linux
-open assessment.html
+open index.html
 
 # Windows
-start assessment.html
+start index.html
 ```
 
 [**Live demo (GitHub Pages)**](https://PacharaDon.github.io/sea-sql-assessment/assessment.html) ← *(replace `PacharaDon` with your GitHub username after pushing)*
