@@ -18,7 +18,7 @@ open index.html
 start index.html
 ```
 
-[**Live demo (GitHub Pages)**](https://PacharaDon.github.io/sea-sql-assessment/assessment.html) ← *(replace `PacharaDon` with your GitHub username after pushing)*
+[**Live demo (GitHub Pages)**](https://pacharadon.github.io/SQLPandas/) ← *(replace `PacharaDon` with your GitHub username after pushing)*
 
 ---
 
@@ -102,8 +102,8 @@ start index.html
 ## 📂 Files
 
 ```
-sea-sql-assessment/
-├── assessment.html       # The full app — open in any browser.
+SQLPandas/
+├── index.html       # The full app — open in any browser.
 ├── README.md             # You are here.
 ├── canvas.jsx            # React component extract for claude.ai artifacts / Canvas-style sandboxes.
 ├── .gitignore
@@ -116,11 +116,11 @@ sea-sql-assessment/
 
 ### Option 1 — GitHub Pages (recommended for portfolio)
 
-1. Push this repo to GitHub (any name, e.g. `sea-sql-assessment`)
+1. Push this repo to GitHub (any name, e.g. `SQLPandas`)
 2. Go to **Settings → Pages**
 3. **Source** = `Deploy from a branch` · **Branch** = `main` · **Folder** = `/ (root)`
 4. Save. Wait 60 seconds.
-5. Live at `https://YOUR_USERNAME.github.io/sea-sql-assessment/assessment.html`
+5. Live at `https://pacharadon.github.io/SQLPandas/`
 
 ### Option 2 — Netlify (drag & drop)
 
