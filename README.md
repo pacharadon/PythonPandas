@@ -170,9 +170,36 @@ Spot a bug, a wrong column, a confusing explanation? Open an issue or PR. Especi
 
 ## 📜 License
 
-**MIT** — free to use, fork, modify, share. Commercial use is allowed; attribution appreciated.
+**Paid personal license — not free, not MIT, not redistributable.**
 
-If you find this useful, consider [⭐ starring the repo](#) or sharing the live link with someone prepping for an analyst interview.
+This bootcamp is a paid resource maintained by [@pacharadon](https://github.com/pacharadon). Each purchase gets a personal license tied to your GitHub account and a unique access link.
+
+**Pricing — one-time payment:**
+
+| Region | Price | Payment method |
+|---|---|---|
+| 🇹🇭 Thailand | **600 THB** | PromptPay QR (sent on request) |
+| 🌏 Southeast Asia (non-Thai) | **$25 USD** | QR (sent on request) |
+| 🌐 Rest of world | **$25 USD** | PayPal |
+
+**Your license covers:**
+- Personal use of the trainer for interview prep
+- Access to all 36 micro-lessons + 85 SQL questions + AI Helper
+- Lifetime access to future updates
+
+**Your license does NOT cover:**
+- Redistribution, sharing, or republishing the file
+- Reselling or sublicensing
+- Commercial use (e.g. inside your own paid training product)
+
+**To purchase / request access** — email **motherducker@leadflo.tech** with:
+- Your name
+- Your country (so I send the right pricing + payment method)
+- Your GitHub username
+
+I'll send the QR code (Thai/SEA) or PayPal link (global) and the access link + license within 24h.
+
+If you're using this without a license, please get in touch and pay — it's the only thing keeping this project alive.
 
 ---
 
@@ -180,7 +207,7 @@ If you find this useful, consider [⭐ starring the repo](#) or sharing the live
 
 - **Schemas** inspired by the [Alooba](https://alooba.com) assessment platform's published examples and public-knowledge product surfaces of Shopee, Lazada, Agoda
 - Built collaboratively with [Claude](https://claude.com) (Anthropic) — Sonnet 4.6
-- SQL execution via [sql.js](https://github.com/sql-js/sql.js)
+- SQL execution via [sql.js](https://github.com/sql-js/sql.js); Python via [Pyodide](https://pyodide.org)
 
 ---
 
