@@ -206,7 +206,6 @@ If you're using this without a license, please get in touch and pay — it's the
 ## 🙏 Credits
 
 - **Schemas** inspired by the [Alooba](https://alooba.com) assessment platform's published examples and public-knowledge product surfaces of Shopee, Lazada, Agoda
-- Built collaboratively with [Claude](https://claude.com) (Anthropic) — Sonnet 4.6
 - SQL execution via [sql.js](https://github.com/sql-js/sql.js); Python via [Pyodide](https://pyodide.org)
 
 ---
