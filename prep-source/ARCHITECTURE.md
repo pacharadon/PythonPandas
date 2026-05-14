@@ -1,6 +1,6 @@
 # Architecture
 
-Built by **Pachara Don Stewart (PDS / "Danny")** · [@pacharadon](https://github.com/pacharadon)
+Built by **danny_pachara_DS** · [@pacharadon](https://github.com/pacharadon)
 
 How the app is built, how grading works, how the Python sandbox runs, and what
 to swap when going to production.

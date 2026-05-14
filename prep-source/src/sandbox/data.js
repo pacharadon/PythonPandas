@@ -2,7 +2,7 @@
 // reproducible. If you change anything here, the grader's notion of
 // "plausible result" shifts with it.
 //
-// Built by Pachara Don Stewart (PDS / "Danny") · @pacharadon
+// Built by danny_pachara_DS · @pacharadon
 
 function mulberry32(seed) {
   let a = seed >>> 0;

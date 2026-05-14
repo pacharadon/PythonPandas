@@ -1,6 +1,6 @@
 # Curriculum
 
-Built by **Pachara Don Stewart (PDS / "Danny")** · [@pacharadon](https://github.com/pacharadon)
+Built by **danny_pachara_DS** · [@pacharadon](https://github.com/pacharadon)
 
 The complete prep curriculum. `src/courseData.js` is the runtime source of
 truth — this file is a high-level index. If you change one, change both.

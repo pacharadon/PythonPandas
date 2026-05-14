@@ -1,9 +1,9 @@
 {
   "name": "data-analyst-prep",
   "private": true,
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "Interactive prep platform for Shopee, Lazada, and Agoda (Alooba) data analyst assessments — with live Python (Pyodide) and live SQL (sql.js) execution",
-  "author": "Pachara Don Stewart (PDS / Danny) <@pacharadon>",
+  "author": "danny_pachara_DS <@pacharadon>",
   "license": "MIT",
   "type": "module",
   "scripts": {

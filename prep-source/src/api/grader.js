@@ -1,6 +1,6 @@
 // Thin wrapper for the grader + hint endpoints.
 //
-// Built by Pachara Don Stewart (PDS / "Danny") · @pacharadon
+// Built by danny_pachara_DS · @pacharadon
 //
 // Dev (current): calls the model API directly from the browser using the
 //                browser-access header. Key read from VITE_ANTHROPIC_API_KEY.
@@ -8,13 +8,40 @@
 // Prod (recommended): replace the body of callApi() with a fetch to your
 //                     own /api/grade proxy. See ARCHITECTURE.md.
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
+const ENV_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
 const MODEL = 'claude-haiku-4-5-20251001'; // model identifier — change to upgrade
+const LS_KEY_NAME = 'pds_prep_api_key';
+
+// Read the API key from env (set at build time) OR localStorage (user-entered
+// at runtime via the KeyPrompt modal). Env wins when both are set.
+export function getApiKey() {
+  if (ENV_KEY) return ENV_KEY;
+  try {
+    return localStorage.getItem(LS_KEY_NAME) || '';
+  } catch {
+    return '';
+  }
+}
+
+export function setApiKey(key) {
+  try {
+    localStorage.setItem(LS_KEY_NAME, key);
+  } catch {
+    // localStorage unavailable (private mode, etc.) — silently no-op
+  }
+}
+
+export function clearApiKey() {
+  try {
+    localStorage.removeItem(LS_KEY_NAME);
+  } catch {}
+}
 
 async function callApi(prompt) {
-  if (!API_KEY) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
     throw new Error(
-      'VITE_ANTHROPIC_API_KEY is not set. Copy .env.example to .env.local and add your key.',
+      'No API key configured. Click "Set API key" in the header and paste your Anthropic key.',
     );
   }
 
@@ -22,7 +49,7 @@ async function callApi(prompt) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true',
     },

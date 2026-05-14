@@ -1,6 +1,6 @@
 # Data Analyst Prep — Interactive Course Platform
 
-**Built by Pachara Don Stewart (PDS / "Danny")** · github.com/pacharadon
+**Built by danny_pachara_DS** · github.com/pacharadon
 
 A self-graded interactive learning platform for preparing for data analyst
 assessments at **Shopee**, **Lazada**, and **Agoda** (Alooba).
@@ -38,7 +38,7 @@ which lean heavily on SQL + pandas + business metrics + light stats.
 ```bash
 npm install
 cp .env.example .env.local
-# add your Anthropic API key to .env.local
+# add your API key to .env.local (see .env.example for the format)
 npm run dev
 ```
 
@@ -99,7 +99,7 @@ If an exercise doesn't push toward those, it doesn't belong here.
 
 ## Author
 
-Built by **Pachara Don Stewart** (PDS / "Danny")
+Built by **danny_pachara_DS** (danny_pachara_DS)
 github: [@pacharadon](https://github.com/pacharadon)
 
 This is a personal prep tool I built while preparing for data analyst

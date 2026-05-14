@@ -1,5 +1,5 @@
 // Mock Assessment — timed 45-min exam mode.
-// Built by Pachara Don Stewart (PDS / "Danny") · @pacharadon
+// Built by danny_pachara_DS · @pacharadon
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -143,7 +143,7 @@ export default function MockAssessment({ onExit }) {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
-      style={{ background: bg, color: '#1e293b', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <header
         className="px-6 py-3.5 flex items-center justify-between flex-shrink-0"
@@ -157,7 +157,7 @@ export default function MockAssessment({ onExit }) {
             <Flame className="w-4 h-4" style={{ color: accent }} />
           </div>
           <div>
-            <div className="text-base font-extrabold tracking-tight text-slate-900">Mock Assessment</div>
+            <div className="text-base font-extrabold tracking-tight text-slate-100">Mock Assessment</div>
             <div className="text-[11px] text-slate-500 uppercase tracking-wider">
               45-min · 6 questions · no hints
             </div>
@@ -169,7 +169,7 @@ export default function MockAssessment({ onExit }) {
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm"
             style={{
               background: timeLow ? '#7f1d1d22' : surface2,
-              color: timeLow ? '#dc2626' : '#3b82f6',
+              color: timeLow ? '#fca5a5' : '#3b82f6',
               border: timeLow ? '1px solid #7f1d1d55' : `1px solid ${border}`,
               fontFamily: "'JetBrains Mono', monospace",
             }}
@@ -177,7 +177,7 @@ export default function MockAssessment({ onExit }) {
             <Clock className="w-4 h-4" />
             {formatRemaining(remaining)}
           </div>
-          <div className="text-xs text-slate-600 font-semibold">
+          <div className="text-xs text-slate-400 font-semibold">
             {answered}/{session.questions.length} answered
           </div>
           <button
@@ -202,7 +202,7 @@ export default function MockAssessment({ onExit }) {
             onClick={() => {
               if (window.confirm('Abandon this mock and return to Practice mode?')) onExit();
             }}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-100"
             style={{ border: `1px solid ${border}` }}
           >
             <X className="w-4 h-4" />
@@ -258,7 +258,7 @@ function MockIntro({ onStart, onExit }) {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden items-center justify-center px-6"
-      style={{ background: bg, color: '#1e293b', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <div
         className="max-w-xl w-full rounded-2xl p-8 md:p-10"
@@ -272,25 +272,25 @@ function MockIntro({ onStart, onExit }) {
             <Flame className="w-5 h-5" style={{ color: accent }} />
           </div>
           <h1
-            className="text-3xl text-slate-900"
+            className="text-3xl text-slate-100"
             style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
           >
             Mock Assessment
           </h1>
         </div>
 
-        <div className="space-y-3 text-[15px] text-slate-700 leading-relaxed mb-8">
+        <div className="space-y-3 text-[15px] text-slate-300 leading-relaxed mb-8">
           <p>
-            <strong className="text-slate-900">45 minutes. 6 questions.</strong> Roughly the same
+            <strong className="text-slate-100">45 minutes. 6 questions.</strong> Roughly the same
             shape and pressure as an Alooba timed screen.
           </p>
-          <ul className="text-[14px] text-slate-600 space-y-1 ml-1">
+          <ul className="text-[14px] text-slate-400 space-y-1 ml-1">
             <li>· 1 pandas exercise (Module 4)</li>
             <li>· 3 SQL exercises (Module 5)</li>
             <li>· 2 business / stats questions (Module 6)</li>
           </ul>
           <p>
-            <strong className="text-slate-900">Run is enabled, hints are off.</strong> Submit
+            <strong className="text-slate-100">Run is enabled, hints are off.</strong> Submit
             when you're done (or when the timer hits zero) and the grader scores all 6 at once
             with an honest pass/fail estimate.
           </p>
@@ -327,7 +327,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
-      style={{ background: bg, color: '#1e293b', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <header
         className="px-6 py-3.5 flex items-center justify-between flex-shrink-0"
@@ -340,7 +340,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
           >
             <Award className="w-4 h-4" style={{ color: accent }} />
           </div>
-          <span className="text-base font-extrabold tracking-tight text-slate-900">
+          <span className="text-base font-extrabold tracking-tight text-slate-100">
             Mock results
           </span>
         </div>
@@ -348,7 +348,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
           <button
             onClick={onNewMock}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2"
-            style={{ background: surface2, color: '#475569', border: `1px solid ${border}` }}
+            style={{ background: surface2, color: '#94a3b8', border: `1px solid ${border}` }}
           >
             <RotateCcw className="w-3.5 h-3.5" />
             New mock
@@ -374,7 +374,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
           >
             <div
               className="text-[11px] font-bold uppercase tracking-widest mb-2"
-              style={{ color: passed ? '#059669' : '#d97706' }}
+              style={{ color: passed ? '#34d399' : '#fbbf24' }}
             >
               {passed ? 'Would likely pass' : 'Would likely not pass'}
             </div>
@@ -384,15 +384,15 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
                 style={{
                   fontFamily: "'Fraunces', Georgia, serif",
                   fontWeight: 800,
-                  color: passed ? '#059669' : '#d97706',
+                  color: passed ? '#34d399' : '#fbbf24',
                 }}
               >
                 {verdict.passed}/{verdict.total}
               </span>
-              <span className="text-lg text-slate-600 font-semibold">· {verdict.score}%</span>
+              <span className="text-lg text-slate-400 font-semibold">· {verdict.score}%</span>
             </div>
             {summary && (
-              <p className="text-[15px] text-slate-800 leading-relaxed">{summary}</p>
+              <p className="text-[15px] text-slate-200 leading-relaxed">{summary}</p>
             )}
           </div>
 
@@ -443,12 +443,12 @@ function MockResultCard({ index, topic, draft, grade }) {
         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
           Q{index} · {topic.kind}
         </span>
-        <span className="text-[13px] font-semibold text-slate-800 truncate">{topic.title}</span>
+        <span className="text-[13px] font-semibold text-slate-200 truncate">{topic.title}</span>
         <span
           className="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
           style={{
             background: passed ? '#10b9811a' : '#f59e0b1a',
-            color: passed ? '#059669' : '#d97706',
+            color: passed ? '#34d399' : '#fbbf24',
             border: passed ? '1px solid #10b98155' : '1px solid #f59e0b55',
           }}
         >
@@ -460,7 +460,7 @@ function MockResultCard({ index, topic, draft, grade }) {
           <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
             Prompt
           </div>
-          <p className="text-[13.5px] text-slate-700 leading-relaxed">{topic.exercisePrompt}</p>
+          <p className="text-[13.5px] text-slate-300 leading-relaxed">{topic.exercisePrompt}</p>
         </div>
         <div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
@@ -472,7 +472,7 @@ function MockResultCard({ index, topic, draft, grade }) {
               background: bg,
               border: `1px solid ${border}`,
               fontFamily: "'JetBrains Mono', monospace",
-              color: '#1e293b',
+              color: '#e2e8f0',
             }}
           >
             {draft.trim() || '(no answer submitted)'}
@@ -481,11 +481,11 @@ function MockResultCard({ index, topic, draft, grade }) {
         <div>
           <div
             className="text-[10px] font-bold uppercase tracking-widest mb-1"
-            style={{ color: passed ? '#059669' : '#d97706' }}
+            style={{ color: passed ? '#34d399' : '#fbbf24' }}
           >
             Feedback
           </div>
-          <p className="text-[13.5px] text-slate-800 leading-relaxed">
+          <p className="text-[13.5px] text-slate-200 leading-relaxed">
             {grade?.feedback || '(no feedback)'}
           </p>
         </div>
@@ -508,7 +508,7 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
         <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: accent }}>
           Q{index}/{total}
         </span>
-        <span className="text-[13px] font-semibold text-slate-800 truncate">{topic.title}</span>
+        <span className="text-[13px] font-semibold text-slate-200 truncate">{topic.title}</span>
         <span
           className="ml-auto text-[10px] font-bold uppercase tracking-widest"
           style={{ color: topic.kind === 'concept' ? '#64748b' : '#3b82f6' }}
@@ -518,11 +518,11 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
       </div>
 
       <div className="p-5 space-y-3">
-        <p className="text-[14.5px] text-slate-800 leading-relaxed">{topic.exercisePrompt}</p>
+        <p className="text-[14.5px] text-slate-200 leading-relaxed">{topic.exercisePrompt}</p>
 
         {topic.kind === 'python' && (
           <div
-            className="px-3 py-2 rounded-md text-[11px] text-slate-600 flex items-center gap-2"
+            className="px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <Terminal className="w-3.5 h-3.5" style={{ color: accentDim }} />
@@ -535,7 +535,7 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
         )}
         {topic.kind === 'sql' && (
           <div
-            className="px-3 py-2 rounded-md text-[11px] text-slate-600 flex items-center gap-2"
+            className="px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <Database className="w-3.5 h-3.5" style={{ color: accentDim }} />
@@ -558,7 +558,7 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
           style={{
             background: bg,
             border: `1px solid ${border}`,
-            color: '#1e293b',
+            color: '#e2e8f0',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: '13.5px',
             lineHeight: 1.6,
@@ -607,7 +607,7 @@ function MockRunOutput({ output, kind }) {
           style={{
             background: bg,
             border: '1px solid #7f1d1d55',
-            color: '#dc2626',
+            color: '#fca5a5',
             fontFamily: "'JetBrains Mono', monospace",
           }}
         >
@@ -647,7 +647,7 @@ function MockRunOutput({ output, kind }) {
             {rs.values.slice(0, 15).map((row, ri) => (
               <tr key={ri} style={{ borderBottom: `1px solid ${border}` }}>
                 {row.map((cell, ci) => (
-                  <td key={ci} className="px-3 py-1" style={{ color: cell === null ? '#94a3b8' : '#1e293b' }}>
+                  <td key={ci} className="px-3 py-1" style={{ color: cell === null ? '#94a3b8' : '#e2e8f0' }}>
                     {cell === null ? 'NULL' : String(cell)}
                   </td>
                 ))}
@@ -665,10 +665,10 @@ function MockRunOutput({ output, kind }) {
   }
   // python
   const blocks = [];
-  if (output.stdout) blocks.push(['stdout', output.stdout, '#1e293b']);
+  if (output.stdout) blocks.push(['stdout', output.stdout, '#e2e8f0']);
   if (output.result) blocks.push(['result', output.result, '#3b82f6']);
-  if (output.stderr) blocks.push(['stderr', output.stderr, '#ea580c']);
-  if (output.error)  blocks.push(['traceback', output.error, '#dc2626']);
+  if (output.stderr) blocks.push(['stderr', output.stderr, '#fb923c']);
+  if (output.error)  blocks.push(['traceback', output.error, '#fca5a5']);
   if (blocks.length === 0) {
     return <div className="text-[11px] text-slate-500 mt-1">(Ran. No output.)</div>;
   }
@@ -684,7 +684,7 @@ function MockRunOutput({ output, kind }) {
           </div>
           <pre
             className="text-[12px] leading-relaxed whitespace-pre-wrap break-words mt-1"
-            style={{ fontFamily: "'JetBrains Mono', monospace", color: '#1e293b', margin: 0 }}
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: '#e2e8f0', margin: 0 }}
           >
             {body}
           </pre>

@@ -1,16 +1,16 @@
 // Data Analyst Prep — main course platform component.
-// Built by Pachara Don Stewart (PDS / "Danny") · @pacharadon
+// Built by danny_pachara_DS · @pacharadon
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
   CheckCircle, Circle, Menu, X, ChevronRight,
   ChevronLeft, Send, AlertCircle, Award, Target, Loader2,
   Lightbulb, RotateCcw, Sparkles, Code2, Database, BarChart3,
-  Layers, GitBranch, Briefcase, Flame, Play, Terminal,
+  Layers, GitBranch, Briefcase, Flame, Play, Terminal, Key,
 } from 'lucide-react';
 
 import { COURSE_DATA } from './courseData.js';
-import { gradeSubmission, fetchHint } from './api/grader.js';
+import { gradeSubmission, fetchHint, getApiKey, setApiKey, clearApiKey } from './api/grader.js';
 import { runPython } from './sandbox/pyodide.js';
 import { runSql } from './sandbox/sqljs.js';
 import MockAssessment from './MockAssessment.jsx';
@@ -36,6 +36,7 @@ export default function CoursePlatform() {
   const [runStage, setRunStage] = useState(''); // "Booting Python…" etc
   const [graderError, setGraderError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showKeyPrompt, setShowKeyPrompt] = useState(() => !getApiKey());
   const contentScrollRef = useRef(null);
 
   useEffect(() => {
@@ -184,10 +185,19 @@ export default function CoursePlatform() {
       className="flex h-screen overflow-hidden"
       style={{
         background: bg,
-        color: '#1e293b',
+        color: '#e2e8f0',
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       }}
     >
+      {showKeyPrompt && (
+        <KeyPrompt
+          onSave={(k) => { setApiKey(k); setShowKeyPrompt(false); }}
+          onClose={() => setShowKeyPrompt(false)}
+          onClear={() => { clearApiKey(); setShowKeyPrompt(false); }}
+          hasExisting={!!getApiKey()}
+        />
+      )}
+
       <div
         className={`fixed inset-0 bg-black/70 z-40 transition-opacity duration-300 md:hidden ${
           isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -210,12 +220,12 @@ export default function CoursePlatform() {
               >
                 <Flame className="w-4 h-4" style={{ color: accent }} />
               </div>
-              <span className="text-base font-extrabold tracking-tight text-slate-900">
+              <span className="text-base font-extrabold tracking-tight text-slate-100">
                 Data Analyst Prep
               </span>
             </div>
             <button
-              className="md:hidden text-slate-500 hover:text-slate-900"
+              className="md:hidden text-slate-500 hover:text-slate-100"
               onClick={() => setIsSidebarOpen(false)}
             >
               <X className="w-5 h-5" />
@@ -224,6 +234,17 @@ export default function CoursePlatform() {
 
           <div className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase mt-3">
             Targets · Shopee · Lazada · Agoda / Alooba
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1.5">
+            built by{' '}
+            <a
+              href="https://github.com/pacharadon"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: accentDim, textDecoration: 'none' }}
+            >
+              danny_pachara_DS
+            </a>
           </div>
 
           <div className="mt-4 flex p-0.5 rounded-lg" style={{ background: surface2, border: `1px solid ${border}` }}>
@@ -253,7 +274,7 @@ export default function CoursePlatform() {
 
           <div className="mt-5">
             <div className="flex justify-between items-baseline text-xs mb-2">
-              <span className="text-slate-600 font-medium">Course progress</span>
+              <span className="text-slate-400 font-medium">Course progress</span>
               <span className="font-bold" style={{ color: accent }}>
                 {completedTopics}/{totalTopics} · {progressPercent}%
               </span>
@@ -280,7 +301,7 @@ export default function CoursePlatform() {
                   <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     Part {mIdx + 1} · {module.title}
                   </h2>
-                  <span className="text-[10px] text-slate-400 ml-auto">
+                  <span className="text-[10px] text-slate-500 ml-auto">
                     {moduleCompletedCount}/{module.topics.length}
                   </span>
                 </div>
@@ -327,8 +348,17 @@ export default function CoursePlatform() {
           })}
 
           <button
+            onClick={() => setShowKeyPrompt(true)}
+            className="w-full mt-4 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-slate-500 hover:text-slate-200 transition-colors"
+            style={{ background: surface2, border: `1px solid ${border}` }}
+          >
+            <Key className="w-3.5 h-3.5" />
+            {getApiKey() ? 'Change API key' : 'Set API key'}
+          </button>
+
+          <button
             onClick={handleReset}
-            className="w-full mt-4 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-slate-500 hover:text-slate-800 transition-colors"
+            className="w-full mt-2 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-slate-500 hover:text-slate-200 transition-colors"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -344,7 +374,7 @@ export default function CoursePlatform() {
         >
           <div className="flex items-center gap-3">
             <button
-              className="md:hidden text-slate-600 hover:text-slate-900"
+              className="md:hidden text-slate-400 hover:text-slate-100"
               onClick={() => setIsSidebarOpen(true)}
             >
               <Menu className="w-5 h-5" />
@@ -352,13 +382,13 @@ export default function CoursePlatform() {
             <div className="hidden sm:flex text-xs text-slate-500 items-center gap-2">
               <span>{activeModule.title}</span>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-slate-800 font-semibold">{activeTopic.title}</span>
+              <span className="text-slate-200 font-semibold">{activeTopic.title}</span>
             </div>
           </div>
           {progressPercent === 100 && (
             <div
               className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
-              style={{ background: '#10b98122', color: '#059669', border: '1px solid #10b98155' }}
+              style={{ background: '#10b98122', color: '#34d399', border: '1px solid #10b98155' }}
             >
               <Award className="w-3.5 h-3.5" />
               Complete
@@ -383,7 +413,7 @@ export default function CoursePlatform() {
             </div>
 
             <h1
-              className="text-4xl md:text-5xl tracking-tight text-slate-900 mb-8 leading-[1.05]"
+              className="text-4xl md:text-5xl tracking-tight text-slate-100 mb-8 leading-[1.05]"
               style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
             >
               {activeTopic.title}
@@ -405,7 +435,7 @@ export default function CoursePlatform() {
                         background: surface,
                         border: `1px solid ${border}`,
                         fontFamily: "'JetBrains Mono', monospace",
-                        color: '#1e293b',
+                        color: '#e2e8f0',
                       }}
                     >
                       {para}
@@ -413,7 +443,7 @@ export default function CoursePlatform() {
                   );
                 }
                 return (
-                  <p key={idx} className="my-4 text-[15.5px] leading-[1.75] text-slate-700">
+                  <p key={idx} className="my-4 text-[15.5px] leading-[1.75] text-slate-300">
                     {para}
                   </p>
                 );
@@ -429,7 +459,7 @@ export default function CoursePlatform() {
                 style={{ borderBottom: `1px solid ${border}`, background: surface2 }}
               >
                 <Target className="w-4 h-4" style={{ color: accent }} />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
                   Exercise
                 </span>
                 <span className="ml-auto text-[11px] text-slate-500 flex items-center gap-1">
@@ -439,13 +469,13 @@ export default function CoursePlatform() {
               </div>
 
               <div className="p-5 md:p-6">
-                <p className="text-[15px] text-slate-800 mb-4 leading-relaxed">
+                <p className="text-[15px] text-slate-200 mb-4 leading-relaxed">
                   {activeTopic.exercisePrompt}
                 </p>
 
                 {kind === 'python' && (
                   <div
-                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-600 flex items-center gap-2"
+                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
                     style={{ background: surface2, border: `1px solid ${border}` }}
                   >
                     <Terminal className="w-3.5 h-3.5" style={{ color: accentDim }} />
@@ -459,7 +489,7 @@ export default function CoursePlatform() {
 
                 {kind === 'sql' && (
                   <div
-                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-600 flex items-center gap-2"
+                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
                     style={{ background: surface2, border: `1px solid ${border}` }}
                   >
                     <Database className="w-3.5 h-3.5" style={{ color: accentDim }} />
@@ -487,7 +517,7 @@ export default function CoursePlatform() {
                   style={{
                     background: bg,
                     border: `1px solid ${border}`,
-                    color: '#1e293b',
+                    color: '#e2e8f0',
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '13.5px',
                     lineHeight: 1.6,
@@ -545,7 +575,7 @@ export default function CoursePlatform() {
                     className="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
                     style={{
                       background: 'transparent',
-                      color: '#475569',
+                      color: '#64748b',
                       border: `1px solid ${border}`,
                     }}
                   >
@@ -576,7 +606,7 @@ export default function CoursePlatform() {
                     style={{
                       background: '#7f1d1d22',
                       border: '1px solid #7f1d1d55',
-                      color: '#dc2626',
+                      color: '#fca5a5',
                     }}
                   >
                     <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -600,7 +630,7 @@ export default function CoursePlatform() {
                       <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: accent }}>
                         Hint
                       </div>
-                      <p className="text-sm text-slate-800 leading-relaxed">{hint}</p>
+                      <p className="text-sm text-slate-200 leading-relaxed">{hint}</p>
                     </div>
                   </div>
                 )}
@@ -620,12 +650,12 @@ export default function CoursePlatform() {
                     {topicProgress.status === 'passed' ? (
                       <CheckCircle
                         className="w-5 h-5 flex-shrink-0 mt-0.5"
-                        style={{ color: '#059669' }}
+                        style={{ color: '#34d399' }}
                       />
                     ) : (
                       <AlertCircle
                         className="w-5 h-5 flex-shrink-0 mt-0.5"
-                        style={{ color: '#d97706' }}
+                        style={{ color: '#fbbf24' }}
                       />
                     )}
                     <div>
@@ -633,12 +663,12 @@ export default function CoursePlatform() {
                         className="text-[11px] font-bold uppercase tracking-wider mb-1"
                         style={{
                           color:
-                            topicProgress.status === 'passed' ? '#059669' : '#d97706',
+                            topicProgress.status === 'passed' ? '#34d399' : '#fbbf24',
                         }}
                       >
                         {topicProgress.status === 'passed' ? 'Passed' : 'Needs work'}
                       </div>
-                      <p className="text-sm text-slate-800 leading-relaxed">
+                      <p className="text-sm text-slate-200 leading-relaxed">
                         {topicProgress.feedback}
                       </p>
                     </div>
@@ -675,6 +705,115 @@ export default function CoursePlatform() {
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+function KeyPrompt({ onSave, onClose, onClear, hasExisting }) {
+  const [val, setVal] = useState('');
+  const trimmed = val.trim();
+  const looksValid = trimmed.startsWith('sk-ant-') && trimmed.length > 30;
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center px-4"
+      style={{ background: 'rgba(0,0,0,0.65)' }}
+    >
+      <div
+        className="max-w-md w-full rounded-2xl p-7"
+        style={{ background: surface, border: `1px solid ${border}` }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            style={{ background: `${accent}22`, border: `1px solid ${accent}55` }}
+          >
+            <Key className="w-5 h-5" style={{ color: accent }} />
+          </div>
+          <h2
+            className="text-xl text-slate-100"
+            style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
+          >
+            {hasExisting ? 'Update API key' : 'Set your API key'}
+          </h2>
+        </div>
+
+        <div className="text-[13.5px] text-slate-300 leading-relaxed mb-4 space-y-2">
+          <p>
+            Grading, hints, and mock summaries call an external model API. The key stays in
+            your browser (<code style={{ color: accentDim }}>localStorage</code>) — it never
+            leaves your machine except in the outbound model request.
+          </p>
+          <p className="text-[12.5px] text-slate-400">
+            Get a key at{' '}
+            <a
+              href="https://console.anthropic.com/settings/keys"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: accentDim, textDecoration: 'underline' }}
+            >
+              console.anthropic.com/settings/keys
+            </a>{' '}
+            (the model identifier the app sends is configurable in <code>src/api/grader.js</code>).
+          </p>
+        </div>
+
+        <input
+          type="password"
+          autoFocus
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && looksValid) onSave(trimmed); }}
+          placeholder="sk-ant-api03-..."
+          className="w-full p-3 rounded-lg outline-none"
+          style={{
+            background: bg,
+            border: `1px solid ${border}`,
+            color: '#e2e8f0',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: '13px',
+          }}
+        />
+        {val && !looksValid && (
+          <div className="mt-2 text-[11px]" style={{ color: '#fbbf24' }}>
+            Keys start with <code>sk-ant-</code> and are longer than that.
+          </div>
+        )}
+
+        <div className="mt-5 flex gap-2">
+          <button
+            onClick={() => onSave(trimmed)}
+            disabled={!looksValid}
+            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold disabled:opacity-50"
+            style={{ background: accent, color: '#ffffff' }}
+          >
+            Save
+          </button>
+          {hasExisting && (
+            <button
+              onClick={onClear}
+              className="px-4 py-2.5 rounded-lg text-sm font-semibold"
+              style={{ background: 'transparent', color: '#fca5a5', border: `1px solid #7f1d1d55` }}
+            >
+              Clear
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-lg text-sm font-semibold"
+            style={{ background: 'transparent', color: '#94a3b8', border: `1px solid ${border}` }}
+          >
+            {hasExisting ? 'Cancel' : 'Skip'}
+          </button>
+        </div>
+
+        {!hasExisting && (
+          <p className="mt-4 text-[11px] text-slate-500">
+            You can skip and browse the curriculum, but Submit / Get a hint / Mock-grading will
+            fail until a key is set.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -722,8 +861,8 @@ function RunOutput({ output }) {
         className="px-4 py-2 flex items-center gap-2"
         style={{ background: surface2, borderBottom: `1px solid ${border}` }}
       >
-        <Terminal className="w-3.5 h-3.5" style={{ color: error ? '#dc2626' : '#3b82f6' }} />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+        <Terminal className="w-3.5 h-3.5" style={{ color: error ? '#fca5a5' : '#3b82f6' }} />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
           {error ? 'Run · error' : 'Run · output'}
         </span>
       </div>
@@ -749,14 +888,14 @@ function SqlRunOutput({ output }) {
           className="px-4 py-2 flex items-center gap-2"
           style={{ background: surface2, borderBottom: `1px solid ${border}` }}
         >
-          <AlertCircle className="w-3.5 h-3.5" style={{ color: '#dc2626' }} />
-          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#dc2626' }}>
+          <AlertCircle className="w-3.5 h-3.5" style={{ color: '#fca5a5' }} />
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#fca5a5' }}>
             SQL · error
           </span>
         </div>
         <pre
           className="p-4 text-[12.5px] leading-relaxed whitespace-pre-wrap break-words"
-          style={{ fontFamily: "'JetBrains Mono', monospace", color: '#dc2626', margin: 0 }}
+          style={{ fontFamily: "'JetBrains Mono', monospace", color: '#fca5a5', margin: 0 }}
         >
           {error}
         </pre>
@@ -796,7 +935,7 @@ function SqlResultTable({ columns, values, index, total }) {
         style={{ background: surface2, borderBottom: `1px solid ${border}` }}
       >
         <Database className="w-3.5 h-3.5" style={{ color: '#3b82f6' }} />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
           {total > 1 ? `Result ${index}/${total} · ` : 'Result · '}
           {values.length} {values.length === 1 ? 'row' : 'rows'}
           {truncated ? ` (showing first ${MAX_ROWS})` : ''}
@@ -827,7 +966,7 @@ function SqlResultTable({ columns, values, index, total }) {
                   <td
                     key={ci}
                     className="px-3 py-1.5"
-                    style={{ color: cell === null ? '#94a3b8' : '#1e293b' }}
+                    style={{ color: cell === null ? '#475569' : '#e2e8f0' }}
                   >
                     {cell === null ? 'NULL' : String(cell)}
                   </td>
@@ -854,7 +993,7 @@ function OutputBlock({ label, body, color }) {
         className="text-[12.5px] leading-relaxed whitespace-pre-wrap break-words"
         style={{
           fontFamily: "'JetBrains Mono', monospace",
-          color: '#1e293b',
+          color: '#e2e8f0',
           margin: 0,
         }}
       >
