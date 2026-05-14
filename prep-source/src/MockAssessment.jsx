@@ -15,8 +15,9 @@ import {
   pickMockQuestions, verdictFromGrades, formatRemaining, MOCK_DURATION_MS, PASS_THRESHOLD,
 } from './mock.js';
 import { accent, accentDim, bg, surface, surface2, border } from './theme.js';
+import { t, ui, promptFor } from './i18n.js';
 
-export default function MockAssessment({ onExit }) {
+export default function MockAssessment({ onExit, lang = 'en' }) {
   const [session, setSession] = useState(null); // { questions, startedAt }
   const [drafts, setDrafts] = useState({});
   const [runOutputs, setRunOutputs] = useState({});
@@ -116,7 +117,7 @@ export default function MockAssessment({ onExit }) {
   };
 
   const handleNewMock = () => {
-    if (!window.confirm('Start a fresh mock? Your current results will be cleared.')) return;
+    if (!window.confirm(ui('confirmNewMock', lang))) return;
     setSession(null);
     setDrafts({});
     setRunOutputs({});
@@ -124,7 +125,7 @@ export default function MockAssessment({ onExit }) {
   };
 
   // Render
-  if (!session) return <MockIntro onStart={handleStart} onExit={onExit} />;
+  if (!session) return <MockIntro onStart={handleStart} onExit={onExit} lang={lang} />;
   if (results) {
     return (
       <MockResults
@@ -133,6 +134,7 @@ export default function MockAssessment({ onExit }) {
         results={results}
         onNewMock={handleNewMock}
         onExit={onExit}
+        lang={lang}
       />
     );
   }
@@ -143,7 +145,7 @@ export default function MockAssessment({ onExit }) {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
-      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#f5f5f4', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <header
         className="px-6 py-3.5 flex items-center justify-between flex-shrink-0"
@@ -157,9 +159,9 @@ export default function MockAssessment({ onExit }) {
             <Flame className="w-4 h-4" style={{ color: accent }} />
           </div>
           <div>
-            <div className="text-base font-extrabold tracking-tight text-slate-100">Mock Assessment</div>
-            <div className="text-[11px] text-slate-500 uppercase tracking-wider">
-              45-min · 6 questions · no hints
+            <div className="text-base font-extrabold tracking-tight text-stone-100">{ui('mockTitle', lang)}</div>
+            <div className="text-[11px] text-stone-500 uppercase tracking-wider">
+              {ui('mockSubtitle', lang)}
             </div>
           </div>
         </div>
@@ -169,7 +171,7 @@ export default function MockAssessment({ onExit }) {
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm"
             style={{
               background: timeLow ? '#7f1d1d22' : surface2,
-              color: timeLow ? '#fca5a5' : '#3b82f6',
+              color: timeLow ? '#fca5a5' : '#f97316',
               border: timeLow ? '1px solid #7f1d1d55' : `1px solid ${border}`,
               fontFamily: "'JetBrains Mono', monospace",
             }}
@@ -177,8 +179,8 @@ export default function MockAssessment({ onExit }) {
             <Clock className="w-4 h-4" />
             {formatRemaining(remaining)}
           </div>
-          <div className="text-xs text-slate-400 font-semibold">
-            {answered}/{session.questions.length} answered
+          <div className="text-xs text-stone-400 font-semibold">
+            {answered}/{session.questions.length} {ui('answered', lang)}
           </div>
           <button
             onClick={handleSubmitAll}
@@ -189,20 +191,20 @@ export default function MockAssessment({ onExit }) {
             {isGrading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {gradingProgress || 'Grading…'}
+                {gradingProgress || ui('grading', lang)}
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Submit all
+                {ui('submitAll', lang)}
               </>
             )}
           </button>
           <button
             onClick={() => {
-              if (window.confirm('Abandon this mock and return to Practice mode?')) onExit();
+              if (window.confirm(ui('confirmExitMock', lang))) onExit();
             }}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-100"
+            className="p-2 rounded-lg text-stone-500 hover:text-stone-100"
             style={{ border: `1px solid ${border}` }}
           >
             <X className="w-4 h-4" />
@@ -225,6 +227,7 @@ export default function MockAssessment({ onExit }) {
               runStage={runStage[q.id] || ''}
               runOutput={runOutputs[q.id]}
               disabled={isGrading}
+              lang={lang}
             />
           ))}
 
@@ -238,12 +241,12 @@ export default function MockAssessment({ onExit }) {
               {isGrading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {gradingProgress || 'Grading…'}
+                  {gradingProgress || ui('grading', lang)}
                 </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  Submit all & grade
+                  {ui('submitAllAndGrade', lang)}
                 </>
               )}
             </button>
@@ -254,11 +257,11 @@ export default function MockAssessment({ onExit }) {
   );
 }
 
-function MockIntro({ onStart, onExit }) {
+function MockIntro({ onStart, onExit, lang = 'en' }) {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden items-center justify-center px-6"
-      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#f5f5f4', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <div
         className="max-w-xl w-full rounded-2xl p-8 md:p-10"
@@ -272,30 +275,26 @@ function MockIntro({ onStart, onExit }) {
             <Flame className="w-5 h-5" style={{ color: accent }} />
           </div>
           <h1
-            className="text-3xl text-slate-100"
+            className="text-3xl text-stone-100"
             style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
           >
-            Mock Assessment
+            {ui('mockTitle', lang)}
           </h1>
         </div>
 
-        <div className="space-y-3 text-[15px] text-slate-300 leading-relaxed mb-8">
+        <div className="space-y-3 text-[15px] text-stone-300 leading-relaxed mb-8">
           <p>
-            <strong className="text-slate-100">45 minutes. 6 questions.</strong> Roughly the same
-            shape and pressure as an Alooba timed screen.
+            <strong className="text-stone-100">{ui('mockIntroP1', lang)}</strong>{' '}
+            {ui('mockIntroP1b', lang)}
           </p>
-          <ul className="text-[14px] text-slate-400 space-y-1 ml-1">
-            <li>· 1 pandas exercise (Module 4)</li>
-            <li>· 3 SQL exercises (Module 5)</li>
-            <li>· 2 business / stats questions (Module 6)</li>
+          <ul className="text-[14px] text-stone-400 space-y-1 ml-1">
+            <li>{ui('mockIntroL1', lang)}</li>
+            <li>{ui('mockIntroL2', lang)}</li>
+            <li>{ui('mockIntroL3', lang)}</li>
           </ul>
-          <p>
-            <strong className="text-slate-100">Run is enabled, hints are off.</strong> Submit
-            when you're done (or when the timer hits zero) and the grader scores all 6 at once
-            with an honest pass/fail estimate.
-          </p>
-          <p className="text-[13px] text-slate-500">
-            Pass threshold: {PASS_THRESHOLD}/6. Questions are sampled freshly each session.
+          <p>{ui('mockIntroP2', lang)}</p>
+          <p className="text-[13px] text-stone-500">
+            {ui('passThreshold', lang, { n: PASS_THRESHOLD })}
           </p>
         </div>
 
@@ -306,14 +305,14 @@ function MockIntro({ onStart, onExit }) {
             style={{ background: accent, color: '#ffffff' }}
           >
             <Play className="w-4 h-4" />
-            Start mock
+            {ui('startMock', lang)}
           </button>
           <button
             onClick={onExit}
             className="px-5 py-3 rounded-lg text-sm font-semibold"
-            style={{ background: 'transparent', color: '#64748b', border: `1px solid ${border}` }}
+            style={{ background: 'transparent', color: '#78716c', border: `1px solid ${border}` }}
           >
-            Back to Practice
+            {ui('backToPractice', lang)}
           </button>
         </div>
       </div>
@@ -321,13 +320,13 @@ function MockIntro({ onStart, onExit }) {
   );
 }
 
-function MockResults({ session, drafts, results, onNewMock, onExit }) {
+function MockResults({ session, drafts, results, onNewMock, onExit, lang = 'en' }) {
   const { grades, summary, verdict } = results;
   const passed = verdict.verdict === 'would_pass';
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
-      style={{ background: bg, color: '#e2e8f0', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ background: bg, color: '#f5f5f4', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <header
         className="px-6 py-3.5 flex items-center justify-between flex-shrink-0"
@@ -340,25 +339,25 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
           >
             <Award className="w-4 h-4" style={{ color: accent }} />
           </div>
-          <span className="text-base font-extrabold tracking-tight text-slate-100">
-            Mock results
+          <span className="text-base font-extrabold tracking-tight text-stone-100">
+            {ui('mockResults', lang)}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onNewMock}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2"
-            style={{ background: surface2, color: '#94a3b8', border: `1px solid ${border}` }}
+            style={{ background: surface2, color: '#a8a29e', border: `1px solid ${border}` }}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            New mock
+            {ui('newMock', lang)}
           </button>
           <button
             onClick={onExit}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-            style={{ background: 'transparent', color: '#64748b', border: `1px solid ${border}` }}
+            style={{ background: 'transparent', color: '#78716c', border: `1px solid ${border}` }}
           >
-            Back to Practice
+            {ui('backToPractice', lang)}
           </button>
         </div>
       </header>
@@ -376,7 +375,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
               className="text-[11px] font-bold uppercase tracking-widest mb-2"
               style={{ color: passed ? '#34d399' : '#fbbf24' }}
             >
-              {passed ? 'Would likely pass' : 'Would likely not pass'}
+              {passed ? ui('wouldPass', lang) : ui('wouldNotPass', lang)}
             </div>
             <div className="flex items-baseline gap-3 mb-4">
               <span
@@ -389,10 +388,10 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
               >
                 {verdict.passed}/{verdict.total}
               </span>
-              <span className="text-lg text-slate-400 font-semibold">· {verdict.score}%</span>
+              <span className="text-lg text-stone-400 font-semibold">· {verdict.score}%</span>
             </div>
             {summary && (
-              <p className="text-[15px] text-slate-200 leading-relaxed">{summary}</p>
+              <p className="text-[15px] text-stone-200 leading-relaxed">{summary}</p>
             )}
           </div>
 
@@ -403,6 +402,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
               topic={q}
               draft={drafts[q.id] || ''}
               grade={grades[i]}
+              lang={lang}
             />
           ))}
 
@@ -413,14 +413,14 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
               style={{ background: accent, color: '#ffffff' }}
             >
               <RotateCcw className="w-4 h-4" />
-              Start a new mock
+              {ui('startNewMock', lang)}
             </button>
             <button
               onClick={onExit}
               className="px-5 py-3 rounded-lg text-sm font-semibold"
-              style={{ background: 'transparent', color: '#64748b', border: `1px solid ${border}` }}
+              style={{ background: 'transparent', color: '#78716c', border: `1px solid ${border}` }}
             >
-              Back to Practice
+              {ui('backToPractice', lang)}
             </button>
           </div>
         </div>
@@ -429,7 +429,7 @@ function MockResults({ session, drafts, results, onNewMock, onExit }) {
   );
 }
 
-function MockResultCard({ index, topic, draft, grade }) {
+function MockResultCard({ index, topic, draft, grade, lang = 'en' }) {
   const passed = grade?.status === 'passed';
   return (
     <div
@@ -440,10 +440,10 @@ function MockResultCard({ index, topic, draft, grade }) {
         className="px-5 py-3 flex items-center gap-3"
         style={{ borderBottom: `1px solid ${border}`, background: surface2 }}
       >
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
           Q{index} · {topic.kind}
         </span>
-        <span className="text-[13px] font-semibold text-slate-200 truncate">{topic.title}</span>
+        <span className="text-[13px] font-semibold text-stone-200 truncate">{t(topic.title, lang)}</span>
         <span
           className="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
           style={{
@@ -452,19 +452,19 @@ function MockResultCard({ index, topic, draft, grade }) {
             border: passed ? '1px solid #10b98155' : '1px solid #f59e0b55',
           }}
         >
-          {passed ? 'passed' : 'needs work'}
+          {passed ? ui('passed', lang).toLowerCase() : ui('needsWork', lang).toLowerCase()}
         </span>
       </div>
       <div className="p-5 space-y-4">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
-            Prompt
+          <div className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">
+            {ui('promptLabel', lang)}
           </div>
-          <p className="text-[13.5px] text-slate-300 leading-relaxed">{topic.exercisePrompt}</p>
+          <p className="text-[13.5px] text-stone-300 leading-relaxed">{promptFor(topic, lang)}</p>
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
-            Your answer
+          <div className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">
+            {ui('yourAnswer', lang)}
           </div>
           <pre
             className="text-[12.5px] leading-relaxed whitespace-pre-wrap break-words p-3 rounded-md"
@@ -472,10 +472,10 @@ function MockResultCard({ index, topic, draft, grade }) {
               background: bg,
               border: `1px solid ${border}`,
               fontFamily: "'JetBrains Mono', monospace",
-              color: '#e2e8f0',
+              color: '#f5f5f4',
             }}
           >
-            {draft.trim() || '(no answer submitted)'}
+            {draft.trim() || ui('noAnswer', lang)}
           </pre>
         </div>
         <div>
@@ -483,9 +483,9 @@ function MockResultCard({ index, topic, draft, grade }) {
             className="text-[10px] font-bold uppercase tracking-widest mb-1"
             style={{ color: passed ? '#34d399' : '#fbbf24' }}
           >
-            Feedback
+            {ui('feedback', lang)}
           </div>
-          <p className="text-[13.5px] text-slate-200 leading-relaxed">
+          <p className="text-[13.5px] text-stone-200 leading-relaxed">
             {grade?.feedback || '(no feedback)'}
           </p>
         </div>
@@ -494,7 +494,7 @@ function MockResultCard({ index, topic, draft, grade }) {
   );
 }
 
-function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, runStage, runOutput, disabled }) {
+function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, runStage, runOutput, disabled, lang = 'en' }) {
   const showRun = topic.kind === 'python' || topic.kind === 'sql';
   return (
     <div
@@ -508,41 +508,41 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
         <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: accent }}>
           Q{index}/{total}
         </span>
-        <span className="text-[13px] font-semibold text-slate-200 truncate">{topic.title}</span>
+        <span className="text-[13px] font-semibold text-stone-200 truncate">{t(topic.title, lang)}</span>
         <span
           className="ml-auto text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: topic.kind === 'concept' ? '#64748b' : '#3b82f6' }}
+          style={{ color: topic.kind === 'concept' ? '#78716c' : '#f97316' }}
         >
           {topic.kind}
         </span>
       </div>
 
       <div className="p-5 space-y-3">
-        <p className="text-[14.5px] text-slate-200 leading-relaxed">{topic.exercisePrompt}</p>
+        <p className="text-[14.5px] text-stone-200 leading-relaxed">{promptFor(topic, lang)}</p>
 
         {topic.kind === 'python' && (
           <div
-            className="px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
+            className="px-3 py-2 rounded-md text-[11px] text-stone-400 flex items-center gap-2"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <Terminal className="w-3.5 h-3.5" style={{ color: accentDim }} />
             <span>
-              Sandbox: <code style={{ color: '#3b82f6' }}>orders</code>,{' '}
-              <code style={{ color: '#3b82f6' }}>customers</code>,{' '}
-              <code style={{ color: '#3b82f6' }}>pd</code>
+              Sandbox: <code style={{ color: '#f97316' }}>orders</code>,{' '}
+              <code style={{ color: '#f97316' }}>customers</code>,{' '}
+              <code style={{ color: '#f97316' }}>pd</code>
             </span>
           </div>
         )}
         {topic.kind === 'sql' && (
           <div
-            className="px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
+            className="px-3 py-2 rounded-md text-[11px] text-stone-400 flex items-center gap-2"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <Database className="w-3.5 h-3.5" style={{ color: accentDim }} />
             <span>
-              Tables: <code style={{ color: '#3b82f6' }}>orders</code>,{' '}
-              <code style={{ color: '#3b82f6' }}>customers</code>,{' '}
-              <code style={{ color: '#3b82f6' }}>bookings</code>
+              Tables: <code style={{ color: '#f97316' }}>orders</code>,{' '}
+              <code style={{ color: '#f97316' }}>customers</code>,{' '}
+              <code style={{ color: '#f97316' }}>bookings</code>
             </span>
           </div>
         )}
@@ -550,7 +550,9 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
         <textarea
           className="w-full h-36 p-4 rounded-lg outline-none resize-y"
           placeholder={
-            topic.kind === 'concept' ? 'Plain English answer…' : 'Your code here.'
+            topic.kind === 'concept' ? ui('placeholderConcept', lang) :
+            topic.kind === 'sql' ? ui('placeholderSql', lang) :
+            ui('placeholderPython', lang)
           }
           value={draft}
           onChange={e => onDraft(e.target.value)}
@@ -558,7 +560,7 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
           style={{
             background: bg,
             border: `1px solid ${border}`,
-            color: '#e2e8f0',
+            color: '#f5f5f4',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: '13.5px',
             lineHeight: 1.6,
@@ -573,19 +575,19 @@ function MockQuestion({ index, total, topic, draft, onDraft, onRun, isRunning, r
               className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-60"
               style={{
                 background: surface2,
-                color: '#3b82f6',
-                border: `1px solid #3b82f655`,
+                color: '#f97316',
+                border: `1px solid #f9731655`,
               }}
             >
               {isRunning ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {runStage || 'Running…'}
+                  {runStage || ui('running', lang)}
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4" />
-                  Run
+                  {ui('run', lang)}
                 </>
               )}
             </button>
@@ -618,7 +620,7 @@ function MockRunOutput({ output, kind }) {
     const rs = (output.results || [])[0];
     if (!rs) {
       return (
-        <div className="text-[11px] text-slate-500 mt-1">(Query ran, no rows.)</div>
+        <div className="text-[11px] text-stone-500 mt-1">(Query ran, no rows.)</div>
       );
     }
     return (
@@ -636,7 +638,7 @@ function MockRunOutput({ output, kind }) {
                 <th
                   key={c}
                   className="text-left px-3 py-1 font-bold"
-                  style={{ color: '#3b82f6', borderBottom: `1px solid ${border}` }}
+                  style={{ color: '#f97316', borderBottom: `1px solid ${border}` }}
                 >
                   {c}
                 </th>
@@ -647,7 +649,7 @@ function MockRunOutput({ output, kind }) {
             {rs.values.slice(0, 15).map((row, ri) => (
               <tr key={ri} style={{ borderBottom: `1px solid ${border}` }}>
                 {row.map((cell, ci) => (
-                  <td key={ci} className="px-3 py-1" style={{ color: cell === null ? '#94a3b8' : '#e2e8f0' }}>
+                  <td key={ci} className="px-3 py-1" style={{ color: cell === null ? '#a8a29e' : '#f5f5f4' }}>
                     {cell === null ? 'NULL' : String(cell)}
                   </td>
                 ))}
@@ -656,7 +658,7 @@ function MockRunOutput({ output, kind }) {
           </tbody>
         </table>
         {rs.values.length > 15 && (
-          <div className="px-3 py-1 text-[11px] text-slate-500">
+          <div className="px-3 py-1 text-[11px] text-stone-500">
             …{rs.values.length - 15} more rows
           </div>
         )}
@@ -665,12 +667,12 @@ function MockRunOutput({ output, kind }) {
   }
   // python
   const blocks = [];
-  if (output.stdout) blocks.push(['stdout', output.stdout, '#e2e8f0']);
-  if (output.result) blocks.push(['result', output.result, '#3b82f6']);
+  if (output.stdout) blocks.push(['stdout', output.stdout, '#f5f5f4']);
+  if (output.result) blocks.push(['result', output.result, '#f97316']);
   if (output.stderr) blocks.push(['stderr', output.stderr, '#fb923c']);
   if (output.error)  blocks.push(['traceback', output.error, '#fca5a5']);
   if (blocks.length === 0) {
-    return <div className="text-[11px] text-slate-500 mt-1">(Ran. No output.)</div>;
+    return <div className="text-[11px] text-stone-500 mt-1">(Ran. No output.)</div>;
   }
   return (
     <div
@@ -684,7 +686,7 @@ function MockRunOutput({ output, kind }) {
           </div>
           <pre
             className="text-[12px] leading-relaxed whitespace-pre-wrap break-words mt-1"
-            style={{ fontFamily: "'JetBrains Mono', monospace", color: '#e2e8f0', margin: 0 }}
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: '#f5f5f4', margin: 0 }}
           >
             {body}
           </pre>

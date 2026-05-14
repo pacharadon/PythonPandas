@@ -1,28 +1,29 @@
 // Shared visual constants. Edit here to re-skin the whole app.
 //
-// v4.5 — Dark Navy · easier on the eyes than pure white, softer than black.
+// v4.6 — Shopee-orange on warm stone.
 //
-// Surfaces:  deep-navy → slightly lighter navy → hover-navy
-// Accent:    medium-blue → light-blue → softer-blue
-// Text:      soft-off-white → muted slates
+// The reasoning: data-analyst learners aspire to land at Shopee, Lazada,
+// Agoda. Shopee's orange is the most iconic SEA brand color. Pairing it
+// with a warm-dark stone background signals career energy, not enterprise
+// database tooling. Subliminal goal-state.
 
-// Surfaces — navy, NOT black
-export const bg        = '#0f1729'; // page background — deep navy (slate-900 with blue tint)
-export const surface   = '#1a2440'; // cards, sidebar — raised
-export const surface2  = '#222e4d'; // nested cards, hover
-export const codeBg    = '#0a1124'; // textareas, pre blocks — slightly darker
-export const border    = '#2a3654'; // dividers — subtle on navy
+// Surfaces — warm dark, NOT cool navy
+export const bg        = '#1c1917'; // page background — stone-900, warm dark
+export const surface   = '#292524'; // cards, sidebar — stone-800
+export const surface2  = '#3a342f'; // nested cards, hover
+export const codeBg    = '#0c0a09'; // textareas, pre blocks — stone-950, deepest
+export const border    = '#44403c'; // dividers — stone-700
 
-// Accent ramp — readable on dark navy
-export const accent      = '#3b82f6'; // blue-500 · primary CTAs, headings, focus
-export const accentDim   = '#60a5fa'; // blue-400 · highlights, hovers
-export const accentLight = '#93c5fd'; // blue-300 · soft tints, decorative
+// Accent ramp — Shopee-inspired warm orange
+export const accent      = '#ee4d2d'; // Shopee's signature orange · primary CTAs
+export const accentDim   = '#f97316'; // orange-500 · highlights, hovers
+export const accentLight = '#fed7aa'; // orange-200 · soft tints, decorative
 
-// Text on dark surfaces
-export const text        = '#e2e8f0'; // slate-200 — primary body (soft, not pure white)
-export const textMuted   = '#94a3b8'; // slate-400 — secondary body
-export const textSubtle  = '#64748b'; // slate-500 — labels
-export const textFaint   = '#475569'; // slate-600 — disabled / null cells
+// Text on warm-dark surfaces
+export const text        = '#f5f5f4'; // stone-100 — primary body (warm off-white)
+export const textMuted   = '#a8a29e'; // stone-400 — secondary body
+export const textSubtle  = '#78716c'; // stone-500 — labels
+export const textFaint   = '#57534e'; // stone-600 — disabled / null cells
 
-// Text on accent surfaces (blue-500)
-export const textOnAccent = '#ffffff'; // white on blue button
+// Text on accent surfaces (orange)
+export const textOnAccent = '#ffffff'; // white on orange button — Shopee uses the same pattern

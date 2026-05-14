@@ -11,6 +11,7 @@ import {
 
 import { COURSE_DATA } from './courseData.js';
 import { gradeSubmission, fetchHint, getApiKey, setApiKey, clearApiKey } from './api/grader.js';
+import { t, ui, getInitialLang, setLang as persistLang, contentFor, promptFor } from './i18n.js';
 import { runPython } from './sandbox/pyodide.js';
 import { runSql } from './sandbox/sqljs.js';
 import MockAssessment from './MockAssessment.jsx';
@@ -37,7 +38,13 @@ export default function CoursePlatform() {
   const [graderError, setGraderError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showKeyPrompt, setShowKeyPrompt] = useState(() => !getApiKey());
+  const [lang, setLangState] = useState(getInitialLang);
   const contentScrollRef = useRef(null);
+
+  const changeLang = (next) => {
+    setLangState(next);
+    persistLang(next);
+  };
 
   useEffect(() => {
     const id = 'course-platform-fonts';
@@ -61,7 +68,7 @@ export default function CoursePlatform() {
   }, [activeIds.topId]);
 
   if (mode === 'mock') {
-    return <MockAssessment onExit={() => setMode('practice')} />;
+    return <MockAssessment onExit={() => setMode('practice')} lang={lang} />;
   }
 
   const activeModule = COURSE_DATA.find(m => m.id === activeIds.modId);
@@ -101,7 +108,7 @@ export default function CoursePlatform() {
 
   const handleRun = async () => {
     if (!currentDraft.trim()) {
-      setGraderError('Write something first — even a partial answer.');
+      setGraderError(ui('writeSomethingFirst', lang));
       return;
     }
     setIsRunning(true);
@@ -133,7 +140,7 @@ export default function CoursePlatform() {
 
   const handleSubmit = async () => {
     if (!currentDraft.trim()) {
-      setGraderError('Write something first — even a partial answer.');
+      setGraderError(ui('writeSomethingFirst', lang));
       return;
     }
     setIsGrading(true);
@@ -151,7 +158,7 @@ export default function CoursePlatform() {
       }));
     } catch (err) {
       console.error(err);
-      setGraderError(err.message || 'Grader unavailable right now. Try again in a moment.');
+      setGraderError(err.message || ui('graderUnavailable', lang));
     } finally {
       setIsGrading(false);
     }
@@ -164,14 +171,14 @@ export default function CoursePlatform() {
       const text = await fetchHint({ topic: activeTopic });
       setHint(text);
     } catch (err) {
-      setHint('Hint unavailable right now.');
+      setHint(ui('hintUnavailable', lang));
     } finally {
       setIsHinting(false);
     }
   };
 
   const handleReset = () => {
-    if (window.confirm('Clear all progress and drafts? This cannot be undone.')) {
+    if (window.confirm(ui('confirmReset', lang))) {
       setProgress({});
       setDrafts({});
       setRunOutputs({});
@@ -185,7 +192,7 @@ export default function CoursePlatform() {
       className="flex h-screen overflow-hidden"
       style={{
         background: bg,
-        color: '#e2e8f0',
+        color: '#f5f5f4',
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       }}
     >
@@ -220,23 +227,37 @@ export default function CoursePlatform() {
               >
                 <Flame className="w-4 h-4" style={{ color: accent }} />
               </div>
-              <span className="text-base font-extrabold tracking-tight text-slate-100">
-                Data Analyst Prep
+              <span className="text-base font-extrabold tracking-tight text-stone-100">
+                {ui('brandTitle', lang)}
               </span>
             </div>
-            <button
-              className="md:hidden text-slate-500 hover:text-slate-100"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => changeLang(lang === 'en' ? 'th' : 'en')}
+                className="px-2 py-1 rounded text-[11px] font-bold tracking-wider"
+                style={{
+                  background: surface2,
+                  color: accentDim,
+                  border: `1px solid ${border}`,
+                }}
+                title="Toggle language / สลับภาษา"
+              >
+                {lang === 'en' ? 'EN · TH' : 'TH · EN'}
+              </button>
+              <button
+                className="md:hidden text-stone-500 hover:text-stone-100"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          <div className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase mt-3">
-            Targets · Shopee · Lazada · Agoda / Alooba
+          <div className="text-[11px] font-semibold text-stone-500 tracking-wider uppercase mt-3">
+            {ui('targetsLine', lang)}
           </div>
-          <div className="text-[10px] text-slate-500 mt-1.5">
-            built by{' '}
+          <div className="text-[10px] text-stone-500 mt-1.5">
+            {ui('builtBy', lang)}{' '}
             <a
               href="https://github.com/pacharadon"
               target="_blank"
@@ -254,10 +275,10 @@ export default function CoursePlatform() {
               style={
                 mode === 'practice'
                   ? { background: accent, color: '#ffffff' }
-                  : { background: 'transparent', color: '#64748b' }
+                  : { background: 'transparent', color: '#78716c' }
               }
             >
-              Practice
+              {ui('practice', lang)}
             </button>
             <button
               onClick={() => setMode('mock')}
@@ -265,16 +286,16 @@ export default function CoursePlatform() {
               style={
                 mode === 'mock'
                   ? { background: accent, color: '#ffffff' }
-                  : { background: 'transparent', color: '#64748b' }
+                  : { background: 'transparent', color: '#78716c' }
               }
             >
-              Mock · 45min
+              {ui('mockTab', lang)}
             </button>
           </div>
 
           <div className="mt-5">
             <div className="flex justify-between items-baseline text-xs mb-2">
-              <span className="text-slate-400 font-medium">Course progress</span>
+              <span className="text-stone-400 font-medium">{ui('courseProgress', lang)}</span>
               <span className="font-bold" style={{ color: accent }}>
                 {completedTopics}/{totalTopics} · {progressPercent}%
               </span>
@@ -297,11 +318,11 @@ export default function CoursePlatform() {
             return (
               <div key={module.id} className="mb-5">
                 <div className="flex items-center gap-2 px-2 mb-2">
-                  <ModIcon className="w-3.5 h-3.5 text-slate-400" />
-                  <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    Part {mIdx + 1} · {module.title}
+                  <ModIcon className="w-3.5 h-3.5 text-stone-400" />
+                  <h2 className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                    {ui('module', lang)} {mIdx + 1} · {t(module.title, lang)}
                   </h2>
-                  <span className="text-[10px] text-slate-500 ml-auto">
+                  <span className="text-[10px] text-stone-500 ml-auto">
                     {moduleCompletedCount}/{module.topics.length}
                   </span>
                 </div>
@@ -317,7 +338,7 @@ export default function CoursePlatform() {
                         style={
                           isActive
                             ? { background: `${accent}1a`, color: accent, border: `1px solid ${accent}44` }
-                            : { background: 'transparent', color: '#64748b', border: '1px solid transparent' }
+                            : { background: 'transparent', color: '#78716c', border: '1px solid transparent' }
                         }
                         onMouseEnter={e => {
                           if (!isActive) e.currentTarget.style.background = surface2;
@@ -337,7 +358,7 @@ export default function CoursePlatform() {
                           />
                         )}
                         <span className="text-sm font-medium truncate">
-                          {topic.title}
+                          {t(topic.title, lang)}
                         </span>
                       </button>
                     );
@@ -349,20 +370,20 @@ export default function CoursePlatform() {
 
           <button
             onClick={() => setShowKeyPrompt(true)}
-            className="w-full mt-4 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-slate-500 hover:text-slate-200 transition-colors"
+            className="w-full mt-4 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-stone-500 hover:text-stone-200 transition-colors"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <Key className="w-3.5 h-3.5" />
-            {getApiKey() ? 'Change API key' : 'Set API key'}
+            {getApiKey() ? ui('changeApiKey', lang) : ui('setApiKey', lang)}
           </button>
 
           <button
             onClick={handleReset}
-            className="w-full mt-2 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-slate-500 hover:text-slate-200 transition-colors"
+            className="w-full mt-2 px-3 py-2 rounded-md flex items-center gap-2 text-xs text-stone-500 hover:text-stone-200 transition-colors"
             style={{ background: surface2, border: `1px solid ${border}` }}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset progress
+            {ui('resetProgress', lang)}
           </button>
         </nav>
       </aside>
@@ -374,15 +395,15 @@ export default function CoursePlatform() {
         >
           <div className="flex items-center gap-3">
             <button
-              className="md:hidden text-slate-400 hover:text-slate-100"
+              className="md:hidden text-stone-400 hover:text-stone-100"
               onClick={() => setIsSidebarOpen(true)}
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="hidden sm:flex text-xs text-slate-500 items-center gap-2">
-              <span>{activeModule.title}</span>
+            <div className="hidden sm:flex text-xs text-stone-500 items-center gap-2">
+              <span>{t(activeModule.title, lang)}</span>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-slate-200 font-semibold">{activeTopic.title}</span>
+              <span className="text-stone-200 font-semibold">{t(activeTopic.title, lang)}</span>
             </div>
           </div>
           {progressPercent === 100 && (
@@ -391,7 +412,7 @@ export default function CoursePlatform() {
               style={{ background: '#10b98122', color: '#34d399', border: '1px solid #10b98155' }}
             >
               <Award className="w-3.5 h-3.5" />
-              Complete
+              {ui('complete', lang)}
             </div>
           )}
         </header>
@@ -407,20 +428,20 @@ export default function CoursePlatform() {
                   border: `1px solid ${accent}44`,
                 }}
               >
-                {activeModule.title}
+                {t(activeModule.title, lang)}
               </span>
-              <KindBadge kind={kind} />
+              <KindBadge kind={kind} lang={lang} />
             </div>
 
             <h1
-              className="text-4xl md:text-5xl tracking-tight text-slate-100 mb-8 leading-[1.05]"
+              className="text-4xl md:text-5xl tracking-tight text-stone-100 mb-8 leading-[1.05]"
               style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
             >
-              {activeTopic.title}
+              {t(activeTopic.title, lang)}
             </h1>
 
             <div className="mb-10">
-              {activeTopic.content.split('\n\n').map((para, idx) => {
+              {contentFor(activeTopic, lang).split('\n\n').map((para, idx) => {
                 const isCodey =
                   /^\s{2,}/.test(para) ||
                   /^[a-z_]+\s*=/m.test(para) ||
@@ -435,7 +456,7 @@ export default function CoursePlatform() {
                         background: surface,
                         border: `1px solid ${border}`,
                         fontFamily: "'JetBrains Mono', monospace",
-                        color: '#e2e8f0',
+                        color: '#f5f5f4',
                       }}
                     >
                       {para}
@@ -443,7 +464,7 @@ export default function CoursePlatform() {
                   );
                 }
                 return (
-                  <p key={idx} className="my-4 text-[15.5px] leading-[1.75] text-slate-300">
+                  <p key={idx} className="my-4 text-[15.5px] leading-[1.75] text-stone-300">
                     {para}
                   </p>
                 );
@@ -459,44 +480,44 @@ export default function CoursePlatform() {
                 style={{ borderBottom: `1px solid ${border}`, background: surface2 }}
               >
                 <Target className="w-4 h-4" style={{ color: accent }} />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Exercise
+                <span className="text-xs font-bold uppercase tracking-wider text-stone-300">
+                  {ui('exercise', lang)}
                 </span>
-                <span className="ml-auto text-[11px] text-slate-500 flex items-center gap-1">
+                <span className="ml-auto text-[11px] text-stone-500 flex items-center gap-1">
                   <Sparkles className="w-3 h-3" style={{ color: accent }} />
-                  Auto-graded
+                  {ui('autoGraded', lang)}
                 </span>
               </div>
 
               <div className="p-5 md:p-6">
-                <p className="text-[15px] text-slate-200 mb-4 leading-relaxed">
-                  {activeTopic.exercisePrompt}
+                <p className="text-[15px] text-stone-200 mb-4 leading-relaxed">
+                  {promptFor(activeTopic, lang)}
                 </p>
 
                 {kind === 'python' && (
                   <div
-                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
+                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-stone-400 flex items-center gap-2"
                     style={{ background: surface2, border: `1px solid ${border}` }}
                   >
                     <Terminal className="w-3.5 h-3.5" style={{ color: accentDim }} />
                     <span>
-                      Sandbox loaded: <code style={{ color: '#3b82f6' }}>orders</code> (200 rows) ·{' '}
-                      <code style={{ color: '#3b82f6' }}>customers</code> (60 rows) ·{' '}
-                      <code style={{ color: '#3b82f6' }}>sales</code> (list) · <code style={{ color: '#3b82f6' }}>pd</code>
+                      Sandbox loaded: <code style={{ color: '#f97316' }}>orders</code> (200 rows) ·{' '}
+                      <code style={{ color: '#f97316' }}>customers</code> (60 rows) ·{' '}
+                      <code style={{ color: '#f97316' }}>sales</code> (list) · <code style={{ color: '#f97316' }}>pd</code>
                     </span>
                   </div>
                 )}
 
                 {kind === 'sql' && (
                   <div
-                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-slate-400 flex items-center gap-2"
+                    className="mb-3 px-3 py-2 rounded-md text-[11px] text-stone-400 flex items-center gap-2"
                     style={{ background: surface2, border: `1px solid ${border}` }}
                   >
                     <Database className="w-3.5 h-3.5" style={{ color: accentDim }} />
                     <span>
-                      Tables: <code style={{ color: '#3b82f6' }}>orders</code> (200) ·{' '}
-                      <code style={{ color: '#3b82f6' }}>customers</code> (60) ·{' '}
-                      <code style={{ color: '#3b82f6' }}>bookings</code> (120). SQLite dialect.
+                      Tables: <code style={{ color: '#f97316' }}>orders</code> (200) ·{' '}
+                      <code style={{ color: '#f97316' }}>customers</code> (60) ·{' '}
+                      <code style={{ color: '#f97316' }}>bookings</code> (120). SQLite dialect.
                     </span>
                   </div>
                 )}
@@ -505,10 +526,10 @@ export default function CoursePlatform() {
                   className="w-full h-44 md:h-52 p-4 rounded-lg outline-none resize-y"
                   placeholder={
                     kind === 'sql'
-                      ? '-- Your SQL here. SQLite dialect. End with the SELECT — Run shows the rows.'
+                      ? ui('placeholderSql', lang)
                       : kind === 'concept'
-                        ? 'Your answer in plain English…'
-                        : 'Your Python here. End with an expression to inspect it.'
+                        ? ui('placeholderConcept', lang)
+                        : ui('placeholderPython', lang)
                   }
                   value={currentDraft}
                   onChange={e =>
@@ -517,7 +538,7 @@ export default function CoursePlatform() {
                   style={{
                     background: bg,
                     border: `1px solid ${border}`,
-                    color: '#e2e8f0',
+                    color: '#f5f5f4',
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '13.5px',
                     lineHeight: 1.6,
@@ -532,19 +553,19 @@ export default function CoursePlatform() {
                       className="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
                       style={{
                         background: surface2,
-                        color: '#3b82f6',
-                        border: `1px solid #3b82f655`,
+                        color: '#f97316',
+                        border: `1px solid #f9731655`,
                       }}
                     >
                       {isRunning ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          {runStage || 'Running…'}
+                          {runStage || ui('running', lang)}
                         </>
                       ) : (
                         <>
                           <Play className="w-4 h-4" />
-                          Run
+                          {ui('run', lang)}
                         </>
                       )}
                     </button>
@@ -559,12 +580,12 @@ export default function CoursePlatform() {
                     {isGrading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Grading…
+                        {ui('grading', lang)}
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4" />
-                        Submit
+                        {ui('submit', lang)}
                       </>
                     )}
                   </button>
@@ -575,7 +596,7 @@ export default function CoursePlatform() {
                     className="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
                     style={{
                       background: 'transparent',
-                      color: '#64748b',
+                      color: '#78716c',
                       border: `1px solid ${border}`,
                     }}
                   >
@@ -584,11 +605,11 @@ export default function CoursePlatform() {
                     ) : (
                       <Lightbulb className="w-4 h-4" />
                     )}
-                    Get a hint
+                    {ui('getHint', lang)}
                   </button>
 
-                  <span className="text-[11px] text-slate-500 sm:ml-auto">
-                    Draft auto-saves in this session
+                  <span className="text-[11px] text-stone-500 sm:ml-auto">
+                    {ui('draftAutoSaves', lang)}
                   </span>
                 </div>
 
@@ -628,9 +649,9 @@ export default function CoursePlatform() {
                     />
                     <div>
                       <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: accent }}>
-                        Hint
+                        {ui('hint', lang)}
                       </div>
-                      <p className="text-sm text-slate-200 leading-relaxed">{hint}</p>
+                      <p className="text-sm text-stone-200 leading-relaxed">{hint}</p>
                     </div>
                   </div>
                 )}
@@ -666,9 +687,9 @@ export default function CoursePlatform() {
                             topicProgress.status === 'passed' ? '#34d399' : '#fbbf24',
                         }}
                       >
-                        {topicProgress.status === 'passed' ? 'Passed' : 'Needs work'}
+                        {topicProgress.status === 'passed' ? ui('passed', lang) : ui('needsWork', lang)}
                       </div>
-                      <p className="text-sm text-slate-200 leading-relaxed">
+                      <p className="text-sm text-stone-200 leading-relaxed">
                         {topicProgress.feedback}
                       </p>
                     </div>
@@ -684,12 +705,12 @@ export default function CoursePlatform() {
                 className="px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
                   background: 'transparent',
-                  color: '#64748b',
+                  color: '#78716c',
                   border: `1px solid ${border}`,
                 }}
               >
                 <ChevronLeft className="w-4 h-4" />
-                Previous
+                {ui('previous', lang)}
               </button>
 
               <button
@@ -698,7 +719,7 @@ export default function CoursePlatform() {
                 className="px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{ background: accent, color: '#ffffff' }}
               >
-                Next
+                {ui('next', lang)}
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -731,20 +752,20 @@ function KeyPrompt({ onSave, onClose, onClear, hasExisting }) {
             <Key className="w-5 h-5" style={{ color: accent }} />
           </div>
           <h2
-            className="text-xl text-slate-100"
+            className="text-xl text-stone-100"
             style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 800 }}
           >
             {hasExisting ? 'Update API key' : 'Set your API key'}
           </h2>
         </div>
 
-        <div className="text-[13.5px] text-slate-300 leading-relaxed mb-4 space-y-2">
+        <div className="text-[13.5px] text-stone-300 leading-relaxed mb-4 space-y-2">
           <p>
             Grading, hints, and mock summaries call an external model API. The key stays in
             your browser (<code style={{ color: accentDim }}>localStorage</code>) — it never
             leaves your machine except in the outbound model request.
           </p>
-          <p className="text-[12.5px] text-slate-400">
+          <p className="text-[12.5px] text-stone-400">
             Get a key at{' '}
             <a
               href="https://console.anthropic.com/settings/keys"
@@ -769,7 +790,7 @@ function KeyPrompt({ onSave, onClose, onClear, hasExisting }) {
           style={{
             background: bg,
             border: `1px solid ${border}`,
-            color: '#e2e8f0',
+            color: '#f5f5f4',
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: '13px',
           }}
@@ -801,14 +822,14 @@ function KeyPrompt({ onSave, onClose, onClear, hasExisting }) {
           <button
             onClick={onClose}
             className="px-4 py-2.5 rounded-lg text-sm font-semibold"
-            style={{ background: 'transparent', color: '#94a3b8', border: `1px solid ${border}` }}
+            style={{ background: 'transparent', color: '#a8a29e', border: `1px solid ${border}` }}
           >
             {hasExisting ? 'Cancel' : 'Skip'}
           </button>
         </div>
 
         {!hasExisting && (
-          <p className="mt-4 text-[11px] text-slate-500">
+          <p className="mt-4 text-[11px] text-stone-500">
             You can skip and browse the curriculum, but Submit / Get a hint / Mock-grading will
             fail until a key is set.
           </p>
@@ -818,13 +839,14 @@ function KeyPrompt({ onSave, onClose, onClear, hasExisting }) {
   );
 }
 
-function KindBadge({ kind }) {
-  const map = {
-    python: { label: 'Python · runnable', color: '#3b82f6' },
-    sql: { label: 'SQL · runnable', color: '#3b82f6' },
-    concept: { label: 'Concept · text answer', color: '#64748b' },
+function KindBadge({ kind, lang }) {
+  const colorMap = {
+    python: '#f97316',
+    sql: '#f97316',
+    concept: '#78716c',
   };
-  const cfg = map[kind] || map.concept;
+  const labelKey = kind === 'python' ? 'kindPython' : kind === 'sql' ? 'kindSql' : 'kindConcept';
+  const cfg = { label: ui(labelKey, lang || 'en'), color: colorMap[kind] || colorMap.concept };
   return (
     <span
       className="inline-block text-[11px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full"
@@ -845,7 +867,7 @@ function RunOutput({ output }) {
   if (!hasAny) {
     return (
       <div
-        className="mt-5 p-4 rounded-lg text-xs text-slate-500"
+        className="mt-5 p-4 rounded-lg text-xs text-stone-500"
         style={{ background: bg, border: `1px solid ${border}` }}
       >
         Ran. No output. (Tip: end your snippet with an expression to inspect it.)
@@ -861,8 +883,8 @@ function RunOutput({ output }) {
         className="px-4 py-2 flex items-center gap-2"
         style={{ background: surface2, borderBottom: `1px solid ${border}` }}
       >
-        <Terminal className="w-3.5 h-3.5" style={{ color: error ? '#fca5a5' : '#3b82f6' }} />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <Terminal className="w-3.5 h-3.5" style={{ color: error ? '#fca5a5' : '#f97316' }} />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
           {error ? 'Run · error' : 'Run · output'}
         </span>
       </div>
@@ -905,7 +927,7 @@ function SqlRunOutput({ output }) {
   if (!results || results.length === 0) {
     return (
       <div
-        className="mt-5 p-4 rounded-lg text-xs text-slate-500"
+        className="mt-5 p-4 rounded-lg text-xs text-stone-500"
         style={{ background: bg, border: `1px solid ${border}` }}
       >
         Query ran. No rows returned. (Tip: ensure your SELECT actually projects columns.)
@@ -934,8 +956,8 @@ function SqlResultTable({ columns, values, index, total }) {
         className="px-4 py-2 flex items-center gap-2"
         style={{ background: surface2, borderBottom: `1px solid ${border}` }}
       >
-        <Database className="w-3.5 h-3.5" style={{ color: '#3b82f6' }} />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <Database className="w-3.5 h-3.5" style={{ color: '#f97316' }} />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
           {total > 1 ? `Result ${index}/${total} · ` : 'Result · '}
           {values.length} {values.length === 1 ? 'row' : 'rows'}
           {truncated ? ` (showing first ${MAX_ROWS})` : ''}
@@ -952,7 +974,7 @@ function SqlResultTable({ columns, values, index, total }) {
                 <th
                   key={c}
                   className="text-left px-3 py-1.5 font-bold"
-                  style={{ color: '#3b82f6', borderBottom: `1px solid ${border}` }}
+                  style={{ color: '#f97316', borderBottom: `1px solid ${border}` }}
                 >
                   {c}
                 </th>
@@ -966,7 +988,7 @@ function SqlResultTable({ columns, values, index, total }) {
                   <td
                     key={ci}
                     className="px-3 py-1.5"
-                    style={{ color: cell === null ? '#475569' : '#e2e8f0' }}
+                    style={{ color: cell === null ? '#57534e' : '#f5f5f4' }}
                   >
                     {cell === null ? 'NULL' : String(cell)}
                   </td>
@@ -993,7 +1015,7 @@ function OutputBlock({ label, body, color }) {
         className="text-[12.5px] leading-relaxed whitespace-pre-wrap break-words"
         style={{
           fontFamily: "'JetBrains Mono', monospace",
-          color: '#e2e8f0',
+          color: '#f5f5f4',
           margin: 0,
         }}
       >
