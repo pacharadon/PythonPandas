@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PacharaDon's PythonPandasSQL Bootcamp — Shopee · Lazada · Agoda</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -2539,6 +2539,44 @@ function gradedMatch(user, exp) {
   }
   return false;
 }
+// Normalise a cell so equivalent values compare equal: numbers round to 6 dp
+// (45 == 45.0, float noise absorbed), null/empty are explicit.
+function normCell(c) {
+  if (c === null || c === undefined) return ' null';
+  if (c === '') return ' empty';
+  const n = Number(c);
+  const s = (typeof c === 'boolean' || Number.isNaN(n)) ? String(c) : String(Math.round(n * 1e6) / 1e6);
+  return s + '␟';
+}
+function permute(arr) {
+  if (arr.length <= 1) return [arr];
+  const res = [];
+  arr.forEach((v, i) => { for (const p of permute([...arr.slice(0, i), ...arr.slice(i + 1)])) res.push([v, ...p]); });
+  return res;
+}
+// True if `user` holds the same data as `exp`, independent of ROW order,
+// COLUMN order, and trivial numeric formatting. Column count <= ~6 so trying
+// every column permutation is cheap — this is what makes the grader open to
+// many different-but-equivalent pandas answers.
+function tableMatch(user, exp) {
+  if (!user || !exp || !user.columns || !exp.columns) return false;
+  if (user.columns.length !== exp.columns.length) return false;
+  if (user.values.length !== exp.values.length) return false;
+  const ncol = exp.columns.length;
+  const expKeys = exp.values.map(r => r.map(normCell).join('')).sort();
+  if (ncol > 6) {
+    const userKeys = user.values.map(r => r.map(normCell).join('')).sort();
+    return userKeys.every((v, i) => v === expKeys[i]);
+  }
+  for (const perm of permute([...Array(ncol).keys()])) {
+    const userKeys = user.values.map(r => perm.map(i => normCell(r[i])).join('')).sort();
+    if (userKeys.every((v, i) => v === expKeys[i])) return true;
+  }
+  return false;
+}
+function anyMatch(candidates, exp) {
+  return (candidates || []).some(c => tableMatch(c, exp));
+}
 function diffMask(userR, expR) {
   if (!userR || !expR) return null;
   const rows = Math.max(userR.values.length, expR.values.length);
@@ -3496,7 +3534,7 @@ function App() {
     setPyBusy(true);
     try {
       // eslint-disable-next-line no-undef
-      const py = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/' });
+      const py = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/' });
       // Export each sql.js DB into Pyodide's filesystem, then load every table
       // into a pandas DataFrame named after the table. Learners write pure
       // pandas against these preloaded frames — no SQL, no pd.read_sql needed.
@@ -3522,21 +3560,28 @@ def _pds_use(s):
     for _t, _f in _PDS.get(s, {}).items():
         globals()[_t] = _f.copy()
 
-# Normalise any answer (DataFrame / Series / scalar) into {columns, values}
-# so it can be compared against the reference result the grader computed.
-def _pds_to_table(x):
+# Turn an answer (DataFrame / Series / scalar) into one or more equally-valid
+# {columns, values} shapes. The grader accepts the learner if ANY shape matches
+# the reference — so different-but-equivalent pandas all pass.
+def _pds_candidates(x):
+    out = []
+    def add(d):
+        rows = []
+        for row in d.itertuples(index=False, name=None):
+            rows.append([None if (isinstance(v, float) and pd.isna(v)) else v for v in row])
+        out.append({'columns': [str(c) for c in d.columns], 'values': rows})
     if x is None:
-        return None
+        return out
     if isinstance(x, pd.DataFrame):
-        d = x
+        add(x.reset_index(drop=True))
+        if not isinstance(x.index, pd.RangeIndex):
+            add(x.reset_index())                      # index may itself be the answer key
     elif isinstance(x, pd.Series):
-        d = x.reset_index()
+        add(x.reset_index())                          # index + value (groupby style)
+        add(x.reset_index(drop=True).to_frame())      # values only (distinct / unique)
     else:
-        d = pd.DataFrame({'value': [x]})
-    rows = []
-    for row in d.itertuples(index=False, name=None):
-        rows.append([None if (isinstance(v, float) and pd.isna(v)) else v for v in row])
-    return {'columns': [str(c) for c in d.columns], 'values': rows}
+        add(pd.DataFrame({'value': [x]}))             # scalar
+    return out
 `);
       } catch (e) {
         console.warn('Pandas/data init failed:', e);
@@ -3589,7 +3634,7 @@ def _pds_to_table(x):
     }
     let table = null;
     try {
-      const conv = py.globals.get('_pds_to_table');
+      const conv = py.globals.get('_pds_candidates');
       const proxy = conv(ans);
       if (proxy && proxy.toJs) {
         table = proxy.toJs({ dict_converter: Object.fromEntries });
@@ -3598,7 +3643,7 @@ def _pds_to_table(x):
       conv.destroy();
     } catch (_) { /* leave table null */ }
     if (ans && ans.destroy) ans.destroy();
-    return { result: table, error: null, stdout: outBuf.join('\n') };
+    return { result: (table && table[0]) || null, candidates: table || [], error: null, stdout: outBuf.join('\n') };
   };
   const onRun = () => {
     if (!code.trim()) return;
@@ -3615,9 +3660,9 @@ def _pds_to_table(x):
   const onSubmit = async () => {
     if (isConcept) { onAdvance(); return; }
     if (!code.trim()) return;
-    const { result, error } = await gradePandas(code, q.sch);
+    const { result, candidates, error } = await gradePandas(code, q.sch);
     const exp = expectedResults[q.pos];
-    const correct = !error && gradedMatch(result, exp);
+    const correct = !error && anyMatch(candidates, exp);
     setSubmitState({ userResult: result, error, correct });
     setRunResult(null); setRunError(null); setPyResult(null); setPyError(null);
     if (!correct) persist({ ...state, attempts: { ...state.attempts, [q.pos]: (state.attempts[q.pos] || 0) + 1 } });
