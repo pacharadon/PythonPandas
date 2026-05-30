@@ -629,7 +629,7 @@ const CONCEPTS = {
     ],
     try_yourself: {
       prompt: 'Predict what happens. Does line 1 work? Line 2?',
-      starter_py: 'print(x)\nx = 5'
+      starter_py: 'print(x)\nx = 5', expect: { error: true }
     },
     try_hints: [
       'Line 1 tries to use x — but x has not been defined yet.',
@@ -738,7 +738,7 @@ const CONCEPTS = {
     ],
     try_yourself: {
       prompt: 'Why does this error? Fix it.',
-      starter_py: 'def add(a, b):\nreturn a + b'
+      starter_py: 'def add(a, b):\nreturn a + b', expect: { error: true }
     },
     try_hints: [
       'The body of the function must be indented.',
@@ -767,7 +767,7 @@ const CONCEPTS = {
     ],
     try_yourself: {
       prompt: 'What error do you predict? Read your prediction before running.',
-      starter_py: 'price = "100"\ntotal = price + 50'
+      starter_py: 'price = "100"\ntotal = price + 50', expect: { error: true }
     },
     try_hints: [
       '"100" is a string. 50 is a number. Adding them...',
@@ -824,7 +824,7 @@ const CONCEPTS = {
     ],
     try_yourself: {
       prompt: 'Predict what happens with each line. Which one errors?',
-      starter_py: 'a = 100 + 200\nb = "100" + "200"\nc = "100" + 200'
+      starter_py: 'a = 100 + 200\nb = "100" + "200"\nc = "100" + 200', expect: { error: true }
     },
     try_hints: [
       'Adding two strings glues them together.',
@@ -2598,6 +2598,21 @@ function tableMatch(user, exp) {
 function anyMatch(candidates, exp) {
   return (candidates || []).some(c => tableMatch(c, exp));
 }
+// Grade a concept "try this yourself" run. `expect` (on the lesson) can be:
+//   {error:true}   must raise (predict-the-error lessons)
+//   {chart:true}   must draw a figure
+//   {stdout:'...'} stdout must contain this (whitespace-normalised)
+//   undefined      must just run cleanly
+function normOut(s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+function checkConcept(expect, sig) {
+  if (!sig) return { pass: false, why: 'No result.' };
+  const e = expect || {};
+  if (e.error) return sig.errored ? { pass: true } : { pass: false, why: 'This one is supposed to raise an error — run it and read the traceback.' };
+  if (sig.errored) return { pass: false, why: 'Your code raised an error. Read the last line of the traceback and fix it.' };
+  if (e.chart) return sig.hasChart ? { pass: true } : { pass: false, why: 'No chart was drawn. Make sure you call a plot function (e.g. plt.plot / plt.bar).' };
+  if (e.stdout != null) return normOut(sig.stdout).includes(normOut(e.stdout)) ? { pass: true } : { pass: false, why: 'The output is not what this lesson is looking for yet.' };
+  return { pass: true }; // ran cleanly, no stricter expectation
+}
 function diffMask(userR, expR) {
   if (!userR || !expR) return null;
   const rows = Math.max(userR.values.length, expR.values.length);
@@ -3079,7 +3094,7 @@ function ResultTable({ result, dark = true, mask = null }) {
   );
 }
 
-function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit, onReset, onSkip, onBack, canBack, runResult, runError, submitState, expectedResult, attempt, onGrade, onAdvance, language, setLanguage, pyResult, pyError, pyBusy, pyImage }) {
+function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit, onReset, onSkip, onBack, canBack, runResult, runError, submitState, expectedResult, attempt, onGrade, onAdvance, language, setLanguage, pyResult, pyError, pyBusy, pyImage, conceptResult }) {
   const isCorrect = submitState && submitState.correct;
   const showSideBySide = submitState && !isCorrect && attempt >= 2;
   const meta = SCHEMAS[activeSchema];
@@ -3126,7 +3141,7 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
           </button>
           <button onClick={onSubmit}
             className={`flex items-center gap-1.5 px-4 py-2 text-sm ${isConcept ? 'bg-purple-600 hover:bg-purple-700' : ACCENT_BTN[meta.accent]} text-white rounded-lg font-semibold shadow-sm`}>
-            <Icon name={isConcept ? "chevronRight" : "send"} className="w-3.5 h-3.5"/> {isConcept ? "Got it, start the quiz" : "Submit"}
+            <Icon name={isConcept ? "check" : "send"} className="w-3.5 h-3.5"/> {isConcept ? "Check answer" : "Submit"}
           </button>
         </div>
       </div>
@@ -3161,6 +3176,18 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
               <div className="text-red-400 text-xs mb-2">// error:</div>
               <pre className="text-red-300 whitespace-pre-wrap leading-relaxed">{pyError}</pre>
             </>
+          )}
+          {isConcept && conceptResult && (
+            <div className={`mt-3 p-3 rounded border ${conceptResult.pass ? 'bg-emerald-900/40 border-emerald-600 text-emerald-200' : 'bg-red-900/30 border-red-700 text-red-200'}`}>
+              {conceptResult.pass ? (
+                <>
+                  <div className="font-bold mb-2">✓ Nice — that works.</div>
+                  <button onClick={onAdvance} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 rounded text-xs font-semibold flex items-center gap-1 text-white"><Icon name="chevronRight" className="w-3 h-3"/> Next lesson</button>
+                </>
+              ) : (
+                <div className="text-sm">✗ {conceptResult.why}</div>
+              )}
+            </div>
           )}
           {!runResult && !runError && !submitState && pyResult === null && pyError === null && pyImage === null && !pyBusy && (
             <div className="h-full flex items-center justify-center"><span className="text-slate-500 italic">No results yet. Press Run Code{language === 'sql' ? ' or Submit' : ''}.</span></div>
@@ -3493,6 +3520,7 @@ function App() {
   const [runError, setRunError] = useState(null);
   const [pyResult, setPyResult] = useState(null);
   const [pyImage, setPyImage] = useState(null);
+  const [conceptResult, setConceptResult] = useState(null);
   const [pyError, setPyError] = useState(null);
   const [pyodide, setPyodide] = useState(null);
   const [pyBusy, setPyBusy] = useState(false);
@@ -3548,7 +3576,7 @@ function App() {
     }
     setHintOpen(false);
     setRunResult(null); setRunError(null); setSubmitState(null);
-    setPyResult(null); setPyError(null); setPyImage(null);
+    setPyResult(null); setPyError(null); setPyImage(null); setConceptResult(null);
     setTab('problem');
   }, [state.idx]);
 
@@ -3571,6 +3599,8 @@ function App() {
         for (const name of Object.keys(dbCache)) {
           py.FS.writeFile(name + '.db', dbCache[name].export());
         }
+        // Small sample file so the 'Files' lesson can actually read something.
+        py.FS.writeFile('data.txt', 'order_id,amount\n1001,45.50\n1002,120.00\n1003,12.90\n1004,210.00\n');
         await py.loadPackage(['pandas', 'sqlite3']);
         const schemas = JSON.stringify(Object.keys(dbCache));
         await py.runPythonAsync(`
@@ -3583,10 +3613,25 @@ for _s in ${schemas}:
     _tn = [r[0] for r in _c.execute("SELECT name FROM sqlite_master WHERE type='table'")]
     _PDS[_s] = {t: pd.read_sql('SELECT * FROM ' + t, _c) for t in _tn}
 
-# Activate one schema: expose each table as a fresh global DataFrame.
+# Activate one schema: expose each table as a fresh global DataFrame, plus
+# 'pd', a live 'conn', and the short aliases the worked-solution snippets
+# assume (df / o / b / g / ap) so revealing a solution actually runs.
 def _pds_use(s):
-    for _t, _f in _PDS.get(s, {}).items():
-        globals()[_t] = _f.copy()
+    import sqlite3 as _sq
+    g = globals()
+    g['pd'] = pd
+    g['conn'] = _sq.connect(s + '.db')
+    frames = _PDS.get(s, {})
+    for _t, _f in frames.items():
+        g[_t] = _f.copy()
+    _alias = {
+        'shopee': {'df': 'shopee_users', 'o': 'orders_regional'},
+        'lazada': {'df': 'lazada_users', 'o': 'lazada_orders', 'ol': 'order_lines', 'p': 'products_catalog'},
+        'agoda':  {'df': 'guests', 'b': 'bookings', 'g': 'guests', 'ap': 'agoda_properties'},
+    }.get(s, {})
+    for _k, _t in _alias.items():
+        if _t in frames:
+            g[_k] = frames[_t].copy()
 
 # Turn an answer (DataFrame / Series / scalar) into one or more equally-valid
 # {columns, values} shapes. The grader accepts the learner if ANY shape matches
@@ -3624,6 +3669,7 @@ def _pds_candidates(x):
     setPyBusy(true);
     setPyResult(null); setPyError(null); setPyImage(null);
     let outBuf = [];
+    let sig = { errored: false, stdout: '', hasChart: false, error: null };
     try {
       const py = await ensurePyodide();
       try { await py.loadPackagesFromImports(codeStr); } catch (_) { /* ignore */ }
@@ -3656,6 +3702,7 @@ def __cap():
 __cap()
 `);
       } catch (_) { /* no figure produced */ }
+      sig.hasChart = !!fig;
       if (fig) {
         setPyImage(fig);
         if (/matplotlib|Axes|Figure|Line2D/.test(out)) out = '';
@@ -3663,11 +3710,14 @@ __cap()
       } else {
         setPyResult(out || '(ran with no output — try adding print(...))');
       }
+      sig.stdout = out;
     } catch (e) {
+      sig.errored = true; sig.error = e.message || String(e);
       setPyError((outBuf.length ? outBuf.join('\n') + '\n' : '') + (e.message || String(e)));
     } finally {
       setPyBusy(false);
     }
+    return sig;
   };
   // Run the learner's pandas against the question's schema and normalise the
   // value of their final expression into a {columns, values} table for grading.
@@ -3699,7 +3749,7 @@ __cap()
   };
   const onRun = () => {
     if (!code.trim()) return;
-    setSubmitState(null);
+    setSubmitState(null); setConceptResult(null);
     if (language === 'python') {
       runPython(code);
     } else {
@@ -3710,7 +3760,15 @@ __cap()
   };
   const onAdvance = () => persist({ ...state, idx: Math.min(TASKS.length-1, state.idx+1) });
   const onSubmit = async () => {
-    if (isConcept) { onAdvance(); return; }
+    if (isConcept) {
+      if (!code.trim()) return;
+      setConceptResult(null);
+      const sig = await runPython(code);
+      const res = checkConcept(q.try_yourself && q.try_yourself.expect, sig);
+      setConceptResult(res);
+      if (res.pass) persist({ ...state, solved: new Set([...state.solved, q.pos]) });
+      return;
+    }
     if (!code.trim()) return;
     const { result, candidates, error } = await gradePandas(code, q.sch);
     const exp = expectedResults[q.pos];
@@ -3785,7 +3843,7 @@ __cap()
               submitState={submitState} expectedResult={expectedResults[q.pos]}
               attempt={attempt} onGrade={onGrade} onAdvance={onAdvance}
               language={language} setLanguage={setLanguage}
-              pyResult={pyResult} pyError={pyError} pyBusy={pyBusy} pyImage={pyImage}/>
+              pyResult={pyResult} pyError={pyError} pyBusy={pyBusy} pyImage={pyImage} conceptResult={conceptResult}/>
           </div>
           <div className="col-span-2 min-h-0 flex">
             <ChatPanel q={q} code={code} isConcept={isConcept}/>
