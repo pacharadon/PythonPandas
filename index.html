@@ -10,6 +10,27 @@
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+// ── Lotus garden theme ───────────────────────────────────────────────
+// Palette: green #ADEBB3 · coral #FF857A · orchid #EBAEE6 · brown #6B4042
+// Lessons run on orchid (the lotus flower); the three schemas take the
+// remaining hues so each stays distinct — Shopee=coral, Agoda=green,
+// Lazada=brown. We remap the ramps the app already uses, so every
+// existing class re-themes without touching the components.
+tailwind.config = {
+  theme: { extend: { colors: {
+    lotus: { green:'#ADEBB3', coral:'#FF857A', orchid:'#EBAEE6', brown:'#6B4042' },
+    // lesson accent (was purple) → orchid
+    purple: { 50:'#FBF1FA',100:'#F6E2F2',200:'#EFCBE9',300:'#EBAEE6',400:'#DC85D2',500:'#C462B8',600:'#A8499B',700:'#883B7E',800:'#6B2F63',900:'#4E2248' },
+    // Shopee (was orange) → coral
+    orange: { 50:'#FFF1EF',100:'#FFE2DD',200:'#FFC8C0',300:'#FFA79B',400:'#FF857A',500:'#F76A5C',600:'#E44F3F',700:'#BF3E30',800:'#993326',900:'#7C2C22' },
+    // Agoda + success states (was emerald) → green
+    emerald:{ 50:'#EFFBF1',100:'#DBF6E1',200:'#C2EFCB',300:'#ADEBB3',400:'#7CD889',500:'#51C064',600:'#37A64F',700:'#2C8540',800:'#256B35',900:'#1E552C' },
+    // Lazada (was indigo) → brown
+    indigo: { 50:'#F4EFEF',100:'#E7DDDD',200:'#D1BDBE',300:'#B4969A',400:'#8E696C',500:'#6B4042',600:'#5D393B',700:'#4D2F31',800:'#3E2627',900:'#321F20' },
+  } } }
+};
+</script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif; }
   .code, code, pre, textarea { font-family: "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace; }
@@ -2872,8 +2893,8 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
 
       {/* Try yourself (Python lessons) */}
       {q.try_yourself && (
-        <section className="mb-5 bg-slate-50 border border-slate-200 rounded p-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Try this yourself</h3>
+        <section className="mb-5 bg-lotus-green/25 border border-lotus-green rounded p-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-lotus-brown mb-2">Try this yourself</h3>
           <p className="text-sm text-slate-800 leading-relaxed mb-2">{q.try_yourself.prompt}</p>
           {q.try_yourself.starter_py && (
             <pre className="bg-slate-900 text-slate-100 rounded p-2.5 text-xs code whitespace-pre-wrap leading-relaxed mb-2">{q.try_yourself.starter_py}</pre>
