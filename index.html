@@ -2908,8 +2908,8 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
         </section>
       )}
 
-      {/* Runnable example */}
-      {q.example && (
+      {/* Runnable example — hidden in the pandas-first course (was SQL). */}
+      {false && q.example && (
         <section className="bg-slate-50 border border-slate-200 rounded p-4">
           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Runnable example (in the editor →)</div>
           <p className="text-xs text-slate-600 mb-2">Try running this in the SQL editor to see real output. Schema: {SCHEMAS[exampleSchema] && SCHEMAS[exampleSchema].label}</p>
@@ -2962,7 +2962,7 @@ function ProblemPanel({ q, hintOpen, setHintOpen, showPandas, setShowPandas }) {
     <div className="p-6 overflow-y-auto h-full">
       <div className="mb-4 flex items-center gap-2 flex-wrap">
         <span className={`inline-block text-xs font-bold tracking-wide px-2.5 py-1 rounded border ${DIFF[q.d].color}`}>{DIFF[q.d].label}</span>
-        {q.cmds && q.cmds.map(c => (
+        {false && q.cmds && q.cmds.map(c => (
           <span key={c} className="text-[10px] font-mono px-2 py-1 bg-slate-100 text-slate-600 rounded">{c}</span>
         ))}
       </div>
@@ -2997,7 +2997,7 @@ function ProblemPanel({ q, hintOpen, setHintOpen, showPandas, setShowPandas }) {
 
       <div className="border-t border-slate-200 pt-4">
         <button onClick={() => setShowPandas(!showPandas)} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 font-medium text-xs mb-2">
-          <Icon name="snake" className="w-3.5 h-3.5"/> {showPandas ? 'Hide' : 'Show'} pandas equivalent <span className="text-slate-400">(optional reference)</span>
+          <Icon name="snake" className="w-3.5 h-3.5"/> {showPandas ? 'Hide' : 'Show'} a worked solution <span className="text-slate-400">(try it yourself first)</span>
         </button>
         {showPandas && (
           <div className="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs code whitespace-pre-wrap leading-relaxed">{q.pandas}</div>
