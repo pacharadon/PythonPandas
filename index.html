@@ -3079,7 +3079,7 @@ function ResultTable({ result, dark = true, mask = null }) {
   );
 }
 
-function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit, onReset, onSkip, onBack, canBack, runResult, runError, submitState, expectedResult, attempt, onGrade, onAdvance, language, setLanguage, pyResult, pyError, pyBusy }) {
+function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit, onReset, onSkip, onBack, canBack, runResult, runError, submitState, expectedResult, attempt, onGrade, onAdvance, language, setLanguage, pyResult, pyError, pyBusy, pyImage }) {
   const isCorrect = submitState && submitState.correct;
   const showSideBySide = submitState && !isCorrect && attempt >= 2;
   const meta = SCHEMAS[activeSchema];
@@ -3150,13 +3150,19 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
               <pre className="text-emerald-300 whitespace-pre-wrap leading-relaxed">{pyResult}</pre>
             </>
           )}
+          {pyImage && language === 'python' && (
+            <>
+              <div className="text-slate-400 text-xs mb-2 mt-2">// chart:</div>
+              <img src={pyImage} alt="chart output" className="max-w-full rounded bg-white p-1"/>
+            </>
+          )}
           {pyError !== null && language === 'python' && (
             <>
               <div className="text-red-400 text-xs mb-2">// error:</div>
               <pre className="text-red-300 whitespace-pre-wrap leading-relaxed">{pyError}</pre>
             </>
           )}
-          {!runResult && !runError && !submitState && pyResult === null && pyError === null && !pyBusy && (
+          {!runResult && !runError && !submitState && pyResult === null && pyError === null && pyImage === null && !pyBusy && (
             <div className="h-full flex items-center justify-center"><span className="text-slate-500 italic">No results yet. Press Run Code{language === 'sql' ? ' or Submit' : ''}.</span></div>
           )}
           {runResult && !submitState && (
@@ -3486,6 +3492,7 @@ function App() {
   const [runResult, setRunResult] = useState(null);
   const [runError, setRunError] = useState(null);
   const [pyResult, setPyResult] = useState(null);
+  const [pyImage, setPyImage] = useState(null);
   const [pyError, setPyError] = useState(null);
   const [pyodide, setPyodide] = useState(null);
   const [pyBusy, setPyBusy] = useState(false);
@@ -3541,7 +3548,7 @@ function App() {
     }
     setHintOpen(false);
     setRunResult(null); setRunError(null); setSubmitState(null);
-    setPyResult(null); setPyError(null);
+    setPyResult(null); setPyError(null); setPyImage(null);
     setTab('problem');
   }, [state.idx]);
 
@@ -3615,12 +3622,13 @@ def _pds_candidates(x):
   };
   const runPython = async (codeStr) => {
     setPyBusy(true);
-    setPyResult(null); setPyError(null);
+    setPyResult(null); setPyError(null); setPyImage(null);
     let outBuf = [];
     try {
       const py = await ensurePyodide();
       try { await py.loadPackagesFromImports(codeStr); } catch (_) { /* ignore */ }
       try { py.runPython(`_pds_use(${JSON.stringify(activeSchema)})`); } catch (_) { /* data not ready */ }
+      try { py.runPython("import matplotlib; matplotlib.use('Agg')"); } catch (_) { /* no matplotlib in this lesson */ }
       py.setStdout({ batched: (s) => outBuf.push(s) });
       py.setStderr({ batched: (s) => outBuf.push(s) });
       const ret = await py.runPythonAsync(codeStr);
@@ -3631,7 +3639,30 @@ def _pds_candidates(x):
         if (ret && ret.destroy) ret.destroy();
         if (r && r !== 'undefined') out = out ? out + '\n' + r : r;
       }
-      setPyResult(out || '(ran with no output — try adding print(...))');
+      let fig = null;
+      try {
+        fig = py.runPython(`
+def __cap():
+    import sys
+    if 'matplotlib' not in sys.modules:
+        return None
+    import matplotlib.pyplot as plt, io, base64
+    if not plt.get_fignums():
+        return None
+    buf = io.BytesIO()
+    plt.gcf().savefig(buf, format='png', dpi=110, bbox_inches='tight')
+    plt.close('all')
+    return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()
+__cap()
+`);
+      } catch (_) { /* no figure produced */ }
+      if (fig) {
+        setPyImage(fig);
+        if (/matplotlib|Axes|Figure|Line2D/.test(out)) out = '';
+        setPyResult(out ? out : null);
+      } else {
+        setPyResult(out || '(ran with no output — try adding print(...))');
+      }
     } catch (e) {
       setPyError((outBuf.length ? outBuf.join('\n') + '\n' : '') + (e.message || String(e)));
     } finally {
@@ -3685,7 +3716,7 @@ def _pds_candidates(x):
     const exp = expectedResults[q.pos];
     const correct = !error && anyMatch(candidates, exp);
     setSubmitState({ userResult: result, error, correct });
-    setRunResult(null); setRunError(null); setPyResult(null); setPyError(null);
+    setRunResult(null); setRunError(null); setPyResult(null); setPyError(null); setPyImage(null);
     if (!correct) persist({ ...state, attempts: { ...state.attempts, [q.pos]: (state.attempts[q.pos] || 0) + 1 } });
   };
   const onReset = () => {
@@ -3696,7 +3727,7 @@ def _pds_candidates(x):
       setCode(`# DataFrames are preloaded (pandas is imported as pd).\n# Tables available: ${tables}\n# Write pandas, then END with your answer (a DataFrame / Series / number) — no print needed.\n\n`);
     }
     setRunResult(null); setRunError(null); setSubmitState(null);
-    setPyResult(null); setPyError(null);
+    setPyResult(null); setPyError(null); setPyImage(null);
   };
   const onSkip = () => persist({ ...state, idx: Math.min(TASKS.length-1, state.idx+1) });
   const onBack = () => persist({ ...state, idx: Math.max(0, state.idx-1) });
@@ -3754,7 +3785,7 @@ def _pds_candidates(x):
               submitState={submitState} expectedResult={expectedResults[q.pos]}
               attempt={attempt} onGrade={onGrade} onAdvance={onAdvance}
               language={language} setLanguage={setLanguage}
-              pyResult={pyResult} pyError={pyError} pyBusy={pyBusy}/>
+              pyResult={pyResult} pyError={pyError} pyBusy={pyBusy} pyImage={pyImage}/>
           </div>
           <div className="col-span-2 min-h-0 flex">
             <ChatPanel q={q} code={code} isConcept={isConcept}/>
