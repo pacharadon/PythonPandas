@@ -3251,6 +3251,7 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
 // ============================================================================
 
 function ChatPanel({ q, code, isConcept }) {
+  return null; // AI Helper removed — it required pasting a live API key into a public page. The body below is dead/unreachable.
   const [messages, setMessages] = useState(() => {
     try { return JSON.parse(localStorage.getItem('chat_history_v2') || '[]'); }
     catch { return []; }
@@ -3833,7 +3834,7 @@ __cap()
                 : <SchemaPanel schema={activeSchema}/>}
             </div>
           </div>
-          <div className={(q.pandas_progress !== undefined || q.chart_progress !== undefined || q.cat === 'setup' ? "col-span-3" : "col-span-6") + " flex min-h-0"}>
+          <div className={(q.pandas_progress !== undefined || q.chart_progress !== undefined || q.cat === 'setup' ? "col-span-5" : "col-span-8") + " flex min-h-0"}>
             <QueryArea
               q={q} isConcept={isConcept} activeSchema={activeSchema}
               code={code} setCode={setCode}
@@ -3844,9 +3845,6 @@ __cap()
               attempt={attempt} onGrade={onGrade} onAdvance={onAdvance}
               language={language} setLanguage={setLanguage}
               pyResult={pyResult} pyError={pyError} pyBusy={pyBusy} pyImage={pyImage} conceptResult={conceptResult}/>
-          </div>
-          <div className="col-span-2 min-h-0 flex">
-            <ChatPanel q={q} code={code} isConcept={isConcept}/>
           </div>
         </div>
       </div>
