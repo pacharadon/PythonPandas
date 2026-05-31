@@ -968,13 +968,14 @@ const CONCEPTS = {
       'Keys are usually text; values can be anything — a number, text, True/False, even a list.',
     ],
     try_yourself: {
-      prompt: 'The user dictionary is below. Print the country, then print whether the user is active.',
-      starter_py: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\n# print the country\n# print whether they are active'
+      prompt: '📦 A support ticket just landed about this Shopee user, and the agent needs three facts fast. From the `user` record below, print the country, then the user id, then whether the account is active — one per line, so the agent can read them at a glance.',
+      starter_py: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\n\n# print the country, then the id, then the active status:\n',
+      expect: { stdout: ['TH', '101', 'True'], miss: 'Look up each value by its key: user["country"], user["id"], user["active"] — and print all three.' }
     },
     try_hints: [
       'Square brackets with the key name in quotes: user["country"].',
-      'print(user["country"])\nprint(user["active"])',
-      'Output: TH then True.',
+      'print(user["country"])\nprint(user["id"])\nprint(user["active"])',
+      'Output: TH, 101, True.',
     ],
     example: { schema: 'shopee', sql: '-- SQL row IS a dict:\nSELECT user_id, country, acct_status FROM shopee_users LIMIT 1;' }
   },
@@ -1004,13 +1005,14 @@ const CONCEPTS = {
       'The body runs once per item: a 3-item list runs it 3 times.',
     ],
     try_yourself: {
-      prompt: 'Two parts: (1) loop over prices and print each price. (2) Then add 10% — print each price * 1.1 (so 100 becomes 110.0).',
-      starter_py: 'prices = [100, 200, 300]\n\n# Part 1 — print each price:\n# for ... in ...:\n#     print(...)\n\n# Part 2 — print each price plus 10% (price * 1.1):'
+      prompt: '🛒 It is Shopee 11.11 night — everything is 20% off. `prices` holds the original prices. Loop through them and print each SALE price (80% of the original), one per line. The ops team is watching the live feed.',
+      starter_py: 'prices = [100, 250, 80, 500]\n\n# loop through prices and print each sale price (price * 0.8):\n',
+      expect: { stdout: ['80.0', '200.0', '64.0', '400.0'], miss: 'Each sale price is the original * 0.8. Loop over prices and print(p * 0.8) for each one.' }
     },
     try_hints: [
-      'Part 1 pattern: for VAR in LIST: print(VAR)',
-      'for p in prices:\n    print(p)\n# Part 2 body: print(p * 1.1)',
-      'Part 1 prints 100, 200, 300. Part 2 prints 110.0, 220.0, 330.0 (each on its own line).',
+      'Loop with for, and do the math inside the body: print(p * 0.8)',
+      'for p in prices:\n    print(p * 0.8)',
+      'Output: 80.0, 200.0, 64.0, 400.0 — each on its own line.',
     ],
     example: { schema: 'shopee', sql: '-- SQL "loops" automatically over rows.\nSELECT order_amount FROM orders_regional LIMIT 5;' }
   },
@@ -1134,13 +1136,14 @@ const CONCEPTS = {
       'Functions can have default values: def f(x=10): — caller can skip x.',
     ],
     try_yourself: {
-      prompt: 'Write a function called double that takes a number and returns it doubled. Then call it with 5.',
-      starter_py: "def double(x):\n    return x * 2\n\nprint(double(5))\nprint(double(11))"
+      prompt: '💸 Shopee takes a 3% commission on every seller sale. Write a function `commission(amount)` that RETURNS 3% of the amount (return it, do not print inside). Then print the commission on a 1000 THB sale and on a 2500 THB sale.',
+      starter_py: '# write commission(amount) so it returns amount * 0.03\n\n\n# then print the commission on a 1000 sale and a 2500 sale:\n',
+      expect: { stdout: ['30.0', '75.0'], miss: 'Define commission(amount) with "return amount * 0.03", then print(commission(1000)) and print(commission(2500)).' }
     },
     try_hints: [
-      'Pattern: def NAME(PARAM): return EXPRESSION',
-      'def double(x):\n    return x * 2\nprint(double(5))',
-      'Output: 10',
+      'def NAME(param): return EXPRESSION — and use return, not print, inside the function.',
+      'def commission(amount):\n    return amount * 0.03\nprint(commission(1000))\nprint(commission(2500))',
+      'Output: 30.0 then 75.0.',
     ],
     example: { schema: 'shopee', sql: '-- SQL has built-in functions like ROUND, ABS, COALESCE — same idea.\nSELECT ROUND(order_amount, 0) AS rounded FROM orders_regional LIMIT 5;' }
   },
@@ -1167,13 +1170,14 @@ const CONCEPTS = {
       'A comprehension always returns a NEW list — the original is unchanged.',
     ],
     try_yourself: {
-      prompt: 'Given prices = [100, 200, 300], use a comprehension to make a new list with each price multiplied by 0.9 (10% off).',
-      starter_py: 'prices = [100, 200, 300]\n# discounted = [...]'
+      prompt: '🏷️ Marketing wants a "members price" in the app: every item at 10% off. Given `prices`, use a LIST COMPREHENSION (one line) to build member_prices — each price times 0.9 — then print the list.',
+      starter_py: 'prices = [100, 200, 300]\n\n# member_prices = [ ... ]   # each price * 0.9, in one line\n# print(member_prices)\n',
+      expect: { stdout: ['90.0', '180.0', '270.0'], miss: 'Build it with [p * 0.9 for p in prices], then print the list.' }
     },
     try_hints: [
       'Pattern: [EXPRESSION for ITEM in LIST]',
-      'discounted = [p * 0.9 for p in prices]',
-      'Result: [90.0, 180.0, 270.0]',
+      'member_prices = [p * 0.9 for p in prices]\nprint(member_prices)',
+      'Output: [90.0, 180.0, 270.0]',
     ],
     example: { schema: 'shopee', sql: '-- SQL equivalent — apply transformation to every row:\nSELECT order_amount, order_amount * 0.9 AS discounted FROM orders_regional LIMIT 5;' }
   },
@@ -2667,7 +2671,14 @@ function checkConcept(expect, sig) {
   if (e.error) return sig.errored ? { pass: true } : { pass: false, why: 'This one is supposed to raise an error — run it and read the traceback.' };
   if (sig.errored) return { pass: false, why: 'Your code raised an error. Read the last line of the traceback and fix it.' };
   if (e.chart) return sig.hasChart ? { pass: true } : { pass: false, why: 'No chart was drawn. Make sure you call a plot function (e.g. plt.plot / plt.bar).' };
-  if (e.stdout != null) return normOut(sig.stdout).includes(normOut(e.stdout)) ? { pass: true } : { pass: false, why: 'The output is not what this lesson is looking for yet.' };
+  if (e.stdout != null) {
+    // stdout can be one string or a list of required pieces (any order/format).
+    const need = Array.isArray(e.stdout) ? e.stdout : [e.stdout];
+    const out = normOut(sig.stdout);
+    return need.every(s => out.includes(normOut(s)))
+      ? { pass: true }
+      : { pass: false, why: e.miss || 'Not quite — your output is missing something the scenario asked for. Re-read the task and check what you printed.' };
+  }
   return { pass: true }; // ran cleanly, no stricter expectation
 }
 function diffMask(userR, expR) {
