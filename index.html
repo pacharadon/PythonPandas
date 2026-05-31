@@ -1761,13 +1761,14 @@ advanced: {
       'Sort your bars before plotting — usually descending. Random order = harder to read.',
     ],
     try_yourself: {
-      prompt: 'Make a bar chart: countries = ["TH","ID","VN","PH"], gmv = [120, 95, 80, 60].',
-      starter_py: "import matplotlib.pyplot as plt\ncountries = [\"TH\", \"ID\", \"VN\", \"PH\"]\ngmv = [120, 95, 80, 60]\nplt.bar(countries, gmv)\nplt.title(\"GMV by country\")\nplt.show()\nprint(dict(zip(countries, gmv)))"
+      prompt: '🌾 The farm dashboard needs the morning harvest by crop as a bar chart. crops and kg are below — draw the bars, give it a title, and show it.',
+      starter_py: "import matplotlib.pyplot as plt\ncrops = [\"Rice\", \"Kale\", \"Basil\", \"Chili\"]\nkg = [120, 40, 25, 60]\n\n# draw a bar chart of kg by crop, add a title, then show it:\n",
+      expect: { chart: true, miss: 'Use plt.bar(crops, kg), then plt.title(...), then plt.show().' }
     },
     try_hints: [
-      'plt.bar takes the labels first, values second.',
-      'plt.bar(countries, gmv)\nplt.show()',
-      'You see 4 bars. TH tallest, PH shortest. Add labels next.',
+      'plt.bar takes the labels first, the heights second.',
+      'plt.bar(crops, kg)\nplt.title("Harvest by crop (kg)")\nplt.show()',
+      'You should see four bars — Rice tallest, Basil shortest.',
     ],
     example: { schema: 'shopee', sql: '-- Bar-chart-ready data:\nSELECT country, SUM(order_amount) AS gmv FROM orders_regional GROUP BY country ORDER BY gmv DESC;' }
   },
@@ -1789,13 +1790,14 @@ advanced: {
       'A scatter shows correlation, not causation. Be careful what you claim.',
     ],
     try_yourself: {
-      prompt: 'Make a scatter: price = [10, 20, 30, 40, 50], qty = [100, 80, 50, 30, 15].',
-      starter_py: "import matplotlib.pyplot as plt\nprice = [10, 20, 30, 40, 50]\nqty = [100, 80, 50, 30, 15]\nplt.scatter(price, qty)\nplt.xlabel(\"Price\")\nplt.ylabel(\"Quantity\")\nplt.show()\nprint(\"Higher price, lower qty — negative correlation.\")"
+      prompt: '🏨 Agoda suspects higher room rates mean fewer rooms booked. rate and rooms_booked are below — make a scatter (rate on x, rooms on y), label both axes, and show it. Does the cloud trend down?',
+      starter_py: "import matplotlib.pyplot as plt\nrate = [80, 120, 160, 200, 240]\nrooms_booked = [95, 70, 55, 30, 18]\n\n# scatter rate vs rooms_booked, label both axes, then show it:\n",
+      expect: { chart: true, miss: 'plt.scatter(rate, rooms_booked), then plt.xlabel/ylabel, then plt.show().' }
     },
     try_hints: [
       'plt.scatter takes x first, y second.',
-      'plt.scatter(price, qty)\nplt.show()',
-      'Higher price → fewer orders. Strong negative relationship.',
+      'plt.scatter(rate, rooms_booked)\nplt.xlabel("Rate")\nplt.ylabel("Rooms booked")\nplt.show()',
+      'The dots trend down — higher rate, fewer rooms. A negative relationship.',
     ],
     example: { schema: 'shopee', sql: '-- Scatter-ready: price vs orders for each product:\nSELECT product_id, AVG(unit_price) AS price, COUNT(*) AS qty FROM orders_regional GROUP BY product_id LIMIT 50;' }
   },
@@ -1817,13 +1819,14 @@ advanced: {
       'Outliers stretch the x-axis. Filter or use percentile clipping if needed.',
     ],
     try_yourself: {
-      prompt: 'Plot a histogram of order amounts: amts = [10, 12, 15, 18, 20, 22, 25, 30, 35, 100, 200].',
-      starter_py: "import matplotlib.pyplot as plt\namts = [10, 12, 15, 18, 20, 22, 25, 30, 35, 100, 200]\nplt.hist(amts, bins=10)\nplt.title(\"Order amount distribution\")\nplt.show()\nprint(f\"min={min(amts)} max={max(amts)} n={len(amts)}\")"
+      prompt: '🛍️ Lazada wants the shape of order sizes from the last hour (THB) — mostly small with a few big ones? amts is below. Plot a histogram with 10 bins, title it, and show it.',
+      starter_py: "import matplotlib.pyplot as plt\namts = [10, 12, 15, 18, 20, 22, 25, 30, 35, 100, 200]\n\n# plot a histogram of amts with 10 bins, add a title, then show it:\n",
+      expect: { chart: true, miss: 'plt.hist(amts, bins=10), then plt.title(...), then plt.show().' }
     },
     try_hints: [
-      'plt.hist takes the values and a bins= argument.',
-      'plt.hist(amts, bins=10)\nplt.show()',
-      'Mostly small values, two outliers (100 and 200) on the right tail. Right-skewed.',
+      'plt.hist takes the values and a bins= number.',
+      'plt.hist(amts, bins=10)\nplt.title("Order sizes")\nplt.show()',
+      'Most orders are small; two big ones (100, 200) form a right tail.',
     ],
     example: { schema: 'shopee', sql: '-- Histogram-ready data — one number per row:\nSELECT order_amount FROM orders_regional WHERE order_amount > 0 LIMIT 200;' }
   },
