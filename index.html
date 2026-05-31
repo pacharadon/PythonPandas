@@ -949,25 +949,32 @@ const CONCEPTS = {
     topic: 'dicts',
     pandas_progress: 44,
     why_pandas: 'A pandas row is essentially a dictionary: column names point to values. df["price"] uses the same key-lookup pattern as dict["price"].',
-    what: 'A dictionary stores key-value pairs in curly braces { }. Each key is a name, each value is what that name points to. Access with dict["key"].',
+    what: 'A dictionary stores values under LABELS (called keys), not positions. You look things up by name.\n\n  user = {\n      "id": 101,\n      "country": "TH",\n      "active": True\n  }\n\nEach entry is  "key": value  — the key is the label, the value is what it holds. So "country": "TH" means the key "country" holds the value "TH".\n\nTo read a value, use square brackets with the key:\n  user["country"]   → go into user, find the key "country", give back "TH"\n\nPicture one row of a spreadsheet:  id=101, country=TH, active=True. In pandas a row behaves the same way — row["country"] also returns "TH". A dictionary is just saying: "give me the value under this label."',
+    examples: [
+      { note: 'Make a dictionary, then look up a value by its key:', code: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\nprint(user["country"])   # TH' },
+      { note: 'Each key gives back its own value:', code: 'print(user["id"])       # 101\nprint(user["country"])  # TH\nprint(user["active"])   # True' },
+      { note: 'This is exactly how a pandas row works:', code: '#   id | country | active\n#  101 |   TH    |  True\n# row["country"]  ->  "TH"   (same idea as user["country"])' },
+    ],
     glossary: [
-      { term: 'dict', defn: 'collection of key-value pairs' },
-      { term: 'key', defn: 'the label (must be unique)' },
-      { term: 'value', defn: 'what the key points to' },
-      { term: '.get(key)', defn: 'safer lookup — returns None if missing' },
+      { term: 'dictionary', defn: 'a collection of key: value pairs — look things up by name, not position' },
+      { term: 'key', defn: 'the label you look up by, e.g. "country"' },
+      { term: 'value', defn: 'what a key holds, e.g. "TH"' },
+      { term: 'square brackets', defn: 'user["country"] reads the value stored under that key' },
+      { term: '.get(key)', defn: 'safer lookup — returns None instead of erroring if the key is missing' },
     ],
     gotchas: [
-      'dict["missing_key"] errors. Use dict.get("missing_key") to get None instead.',
-      'Keys are usually strings, but can be numbers too. Values can be anything.',
+      'Use the exact key, in quotes: user["country"] — not user[country] or user("country").',
+      'Asking for a key that does not exist raises KeyError. Check spelling, or use user.get("country").',
+      'Keys are usually text; values can be anything — a number, text, True/False, even a list.',
     ],
     try_yourself: {
-      prompt: 'Create a dict for one Shopee user with id 101, country "TH", active True. Then print just the country.',
-      starter_py: 'user = { ... }\n# print user["country"]'
+      prompt: 'The user dictionary is below. Print the country, then print whether the user is active.',
+      starter_py: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\n# print the country\n# print whether they are active'
     },
     try_hints: [
-      'Use curly braces, key:value separated by commas.',
-      'user = {"id": 101, "country": "TH", "active": True}',
-      'print(user["country"]) returns "TH".',
+      'Square brackets with the key name in quotes: user["country"].',
+      'print(user["country"])\nprint(user["active"])',
+      'Output: TH then True.',
     ],
     example: { schema: 'shopee', sql: '-- SQL row IS a dict:\nSELECT user_id, country, acct_status FROM shopee_users LIMIT 1;' }
   },
