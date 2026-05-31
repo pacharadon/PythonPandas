@@ -852,13 +852,14 @@ const CONCEPTS = {
       'float("") errors — empty string. You must clean missing values first.',
     ],
     try_yourself: {
-      prompt: 'Convert "200" to a number, then add 50 to it. Print the result.',
-      starter_py: 'sale = "200"\n# your code here'
+      prompt: '🥬 Freshket received an order total from a supplier feed as TEXT: sale = "200". Add a 50 THB delivery fee and print the grand total — but text plus a number breaks, so convert it to a number first.',
+      starter_py: 'sale = "200"\n\n# convert sale to a number, add 50, and print the total:\n',
+      expect: { stdout: ['250'], miss: 'Wrap int() (or float()) around sale before adding: int(sale) + 50.' }
     },
     try_hints: [
-      'int() turns text into a number.',
-      'Wrap int() around the variable, then add 50.',
-      'int(sale) + 50 returns 250.',
+      'int("200") turns the text into the number 200.',
+      'print(int(sale) + 50)',
+      'Output: 250.',
     ],
     example: { schema: 'shopee', sql: '-- SQL equivalent of int("200"): CAST(\'200\' AS INTEGER)\nSELECT CAST(\'200\' AS INTEGER) + 50 AS converted_then_added;' }
   },
@@ -879,13 +880,14 @@ const CONCEPTS = {
       'A list can hold different types: [1, "two", 3.0] is valid.',
     ],
     try_yourself: {
-      prompt: 'Create a list called sales with 4 numbers, then print its length.',
-      starter_py: "sales = [100, 200, 300, 400]\nprint(len(sales))\nprint(sales)"
+      prompt: '🌾 A farm weighed five harvest crates this morning (kg): 12, 8, 15, 20, 9. Put them in a list called harvest, then print how many crates there were.',
+      starter_py: '# put the five crate weights in a list called harvest\n# then print how many crates there are:\n',
+      expect: { stdout: ['5'], miss: 'Make harvest = [12, 8, 15, 20, 9], then print(len(harvest)).' }
     },
     try_hints: [
-      'Use square brackets and commas.',
-      'sales = [100, 200, 300, 400]; print(len(sales))',
-      'Output: 4 (because there are 4 elements).',
+      'Square brackets, values separated by commas. len(...) counts them.',
+      'harvest = [12, 8, 15, 20, 9]\nprint(len(harvest))',
+      'Output: 5.',
     ],
     example: { schema: 'shopee', sql: '-- Conceptually: a SQL column IS a list.\nSELECT order_id FROM orders_regional LIMIT 4;' }
   },
@@ -906,13 +908,14 @@ const CONCEPTS = {
       'sales[0] is the FIRST. Coming from Excel? Mentally subtract 1.',
     ],
     try_yourself: {
-      prompt: 'Given sales = [100, 200, 300, 400], what does sales[2] return? What does sales[-1] return?',
-      starter_py: 'sales = [100, 200, 300, 400]\n# print sales[2]\n# print sales[-1]'
+      prompt: '🏨 An Agoda booking arrived as a list: booking = ["BK1007", "Marina Bay", 420, "2026-04-10"]. Print the nightly rate (the item at index 2), then the check-in date (the LAST item).',
+      starter_py: 'booking = ["BK1007", "Marina Bay", 420, "2026-04-10"]\n\n# print the nightly rate (index 2), then the check-in date (last item):\n',
+      expect: { stdout: ['420', '2026-04-10'], miss: 'booking[2] is the rate; booking[-1] is the last item. Print both.' }
     },
     try_hints: [
-      'Count from 0: sales[0]=100, sales[1]=200, sales[2]=?',
-      'sales[2] is 300 (third item). sales[-1] is the last = 400.',
-      'Output: 300 then 400.',
+      'Count from 0: booking[0] is the id, booking[2] is the rate. booking[-1] is the last.',
+      'print(booking[2])\nprint(booking[-1])',
+      'Output: 420 then 2026-04-10.',
     ],
     example: { schema: 'shopee', sql: '-- SQL has no zero-index — uses LIMIT/OFFSET instead.\n-- This grabs the 3rd order (offset 2 = skip 2):\nSELECT order_id FROM orders_regional LIMIT 1 OFFSET 2;' }
   },
@@ -933,13 +936,14 @@ const CONCEPTS = {
       'sales[:] copies the entire list. Useful trick.',
     ],
     try_yourself: {
-      prompt: 'Given sales = [10, 20, 30, 40, 50], what does sales[1:4] return?',
-      starter_py: 'sales = [10, 20, 30, 40, 50]\n# print sales[1:4]'
+      prompt: '🛍️ Lazada ranked its best-sellers (already sorted): sellers = ["Mango", "Rice", "Soap", "Fan", "Lamp"]. The homepage banner only fits the TOP 3 — slice them out and print just those three.',
+      starter_py: 'sellers = ["Mango", "Rice", "Soap", "Fan", "Lamp"]\n\n# slice out the top 3 and print them:\n',
+      expect: { stdout: ['Mango', 'Rice', 'Soap'], miss: 'sellers[:3] takes the first three. Print that slice.' }
     },
     try_hints: [
-      'Start at index 1, stop before index 4.',
-      'sales[1:4] = [20, 30, 40] — three items.',
-      'Output: [20, 30, 40]',
+      'A slice is [start:end]. For the first 3, the start can be blank: sellers[:3].',
+      'print(sellers[:3])',
+      "Output: ['Mango', 'Rice', 'Soap'].",
     ],
     example: { schema: 'shopee', sql: '-- Equivalent in SQL: rows 2 through 4 (1-based, inclusive):\nSELECT order_id FROM orders_regional LIMIT 3 OFFSET 1;' }
   },
@@ -1036,13 +1040,14 @@ const CONCEPTS = {
       'Single-letter names (i, x, n) are OK for short loops. Longer = use real words.',
     ],
     try_yourself: {
-      prompt: 'Rewrite this loop with a better variable name than x: for x in [10, 20, 30]: print(x)',
-      starter_py: 'numbers = [10, 20, 30]\n# write a loop with a meaningful variable name'
+      prompt: '🥕 Freshket wants a quick stock label for each vegetable. Given veggies = ["kale", "carrot", "basil"], loop through and print "In stock: <name>" for each — and use a readable loop variable name (not x).',
+      starter_py: 'veggies = ["kale", "carrot", "basil"]\n\n# loop with a clear variable name and print "In stock: <name>" for each:\n',
+      expect: { stdout: ['In stock: kale', 'In stock: carrot', 'In stock: basil'], miss: 'Loop and print the label: for veg in veggies: print("In stock:", veg)' }
     },
     try_hints: [
-      'What is the item? A number. So name the variable... number.',
-      'for number in numbers:\n    print(number)',
-      'Same output as for x in numbers — just clearer for the reader.',
+      'Name it veg, not x: for veg in veggies: print(...)',
+      'for veg in veggies:\n    print("In stock:", veg)',
+      'Output: In stock: kale / In stock: carrot / In stock: basil.',
     ],
     example: { schema: 'shopee', sql: '-- Aliases in SQL play a similar role:\nSELECT u.country AS shopper_country FROM shopee_users u LIMIT 5;' }
   },
@@ -1269,13 +1274,14 @@ const CONCEPTS = {
       'List math: [1, 2] * 2 gives [1, 2, 1, 2]. Numpy math: np.array([1, 2]) * 2 gives [2, 4]. They differ!',
     ],
     try_yourself: {
-      prompt: 'Mentally trace: np.array([10, 20, 30]) * 3. What do you get?',
-      starter_py: 'import numpy as np\narr = np.array([10, 20, 30])\n# what is arr * 3?'
+      prompt: '🏨 Agoda is applying a 3x peak-season surcharge to its base room rates. Given rates = np.array([100, 150, 200]), multiply the WHOLE array by 3 in one line (no loop) and print it.',
+      starter_py: 'import numpy as np\nrates = np.array([100, 150, 200])\n\n# multiply the whole array by 3 and print it:\n',
+      expect: { stdout: ['300', '450', '600'], miss: 'numpy does whole-array math at once: print(rates * 3).' }
     },
     try_hints: [
-      'Numpy multiplies each element.',
-      'arr * 3 returns array([30, 60, 90])',
-      'You are now ready for pandas. import pandas as pd, and start.',
+      'No loop needed — numpy multiplies every element: rates * 3.',
+      'print(rates * 3)',
+      'Output: [300 450 600].',
     ],
     example: { schema: 'shopee', sql: '-- pandas Series math is column-wide, like numpy.\nSELECT order_amount, order_amount * 3 AS tripled FROM orders_regional LIMIT 5;' }
   },
