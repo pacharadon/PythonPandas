@@ -1680,7 +1680,11 @@ advanced: {
     topic: 'charting',
     chart_progress: 32,
     why_chart: 'Once you can produce a basic plot, every other chart is small variations. The minimum viable chart is 2 lines.',
-    what: 'plt.plot(values) draws a line. plt.show() displays the window. That is the entire pipeline. Everything else (labels, colors, sizes) is polish on top.',
+    what: 'The whole pipeline is two lines:\n\n  plt.plot(values)   # 1. draw a line from your numbers\n  plt.show()         # 2. finish the figure\n\nThat is it — the chart appears right below the editor. plt.plot([10, 30, 20]) draws a line going 10 → 30 → 20, and the x-axis is filled in automatically as 0, 1, 2... Everything else (titles, colours, labels) is polish you add on top.',
+    examples: [
+      { note: 'The 2-line minimum — run it and watch the chart appear below:', code: 'import matplotlib.pyplot as plt\nplt.plot([10, 30, 20, 40, 35])\nplt.show()' },
+      { note: 'plt.plot just connects your numbers in order:', code: 'import matplotlib.pyplot as plt\nplt.plot([1, 4, 9, 16])   # y-values; x is 0,1,2,3 automatically\nplt.show()' },
+    ],
     glossary: [
       { term: 'plt.plot()', defn: 'draw a line plot' },
       { term: 'plt.show()', defn: 'display the figure' },
@@ -1708,7 +1712,7 @@ advanced: {
     topic: 'charting',
     chart_progress: 40,
     why_chart: 'Unlabeled charts are useless. The viewer should not have to ask "what am I looking at?" Three lines fix this forever.',
-    what: 'plt.xlabel("text") labels the bottom. plt.ylabel("text") labels the side. plt.title("text") puts a title at the top. Add these three; your chart now communicates.',
+    what: 'A chart with no labels makes the viewer guess. Three lines fix it (all BEFORE plt.show()):\n\n  plt.xlabel("Day")            # name the bottom axis\n  plt.ylabel("Revenue (USD)")  # name the side axis\n  plt.title("Daily revenue")   # headline at the top\n\nPut units in the labels — "Revenue (USD)" beats "Revenue".',
     glossary: [
       { term: 'xlabel', defn: 'the bottom-axis label' },
       { term: 'ylabel', defn: 'the side-axis label' },
@@ -1736,7 +1740,7 @@ advanced: {
     topic: 'charting',
     chart_progress: 48,
     why_chart: 'When you have a question like "which country has the most sales," the answer is a bar chart. One line of matplotlib makes it.',
-    what: 'plt.bar(categories, values) draws a bar chart. Categories go on the x-axis, values are the heights. The two lists must be the same length.',
+    what: 'plt.bar(categories, values) draws one bar per category — categories along the bottom, value = bar height. The two lists must be the same length and line up by position:\n\n  countries = ["TH", "ID", "VN"]\n  gmv       = [120,   95,   80]\n  plt.bar(countries, gmv)   # the TH bar is 120 tall, ID is 95, ...\n\nTip: sort biggest-to-smallest before plotting so it reads cleanly.',
     glossary: [
       { term: 'plt.bar(x, y)', defn: 'bar chart with categories x and heights y' },
       { term: 'plt.barh(...)', defn: 'horizontal bars — useful for long category names' },
@@ -1763,7 +1767,7 @@ advanced: {
     topic: 'charting',
     chart_progress: 56,
     why_chart: 'When you suspect "X drives Y" — like price vs sales — a scatter shows the truth. Each row becomes one dot.',
-    what: 'plt.scatter(xs, ys) plots one dot per pair. xs is the horizontal value, ys is the vertical. Pattern in the dots = relationship. No pattern = no relationship.',
+    what: 'plt.scatter(xs, ys) plots ONE DOT per pair — xs is the horizontal value, ys the vertical. You read the cloud of dots for a pattern:\n\n  price = [10, 20, 30, 40]\n  qty   = [100, 80, 50, 30]\n  plt.scatter(price, qty)   # each (price, qty) becomes a dot\n\nA downward trend = negative relationship; upward = positive; a shapeless blob = no relationship.',
     glossary: [
       { term: 'scatter', defn: 'one dot per (x, y) pair' },
       { term: 'correlation', defn: 'the strength of a relationship' },
@@ -1791,7 +1795,7 @@ advanced: {
     topic: 'charting',
     chart_progress: 64,
     why_chart: 'When the question is "what is the typical order size" or "is income normally distributed," the answer is a histogram.',
-    what: 'plt.hist(values, bins=20) splits the values into 20 equal-width buckets and counts how many fall in each. The shape tells you: normal, skewed, bimodal, uniform.',
+    what: 'A histogram answers "what is typical, and how spread out?" plt.hist(values, bins=N) chops the range into N equal buckets and counts how many values land in each — so the bar HEIGHTS are counts, not the values themselves:\n\n  plt.hist(order_amounts, bins=10)\n\nThe SHAPE is the message: a long tail to the right = "a few big values pull the average up" (common for prices and income).',
     glossary: [
       { term: 'bins', defn: 'how many buckets to split the range into' },
       { term: 'distribution', defn: 'the overall shape' },
