@@ -1013,7 +1013,11 @@ const CONCEPTS = {
     topic: 'loops',
     pandas_progress: 55,
     why_pandas: 'When you read pandas tutorials and see "for col in df.columns" or "for idx, row in df.iterrows()", knowing that col, idx, row are just names you chose makes everything click.',
-    what: 'In "for x in sales", the x is NOT special. You can write "for banana in sales" and it works exactly the same. Pick a name that describes the item — it makes code readable.',
+    what: 'In "for x in sales", the x is just a label YOU named — it is not a keyword. "for banana in sales" works identically; the name simply holds each item in turn.\n\nSo why care? A clear name makes the body read like English:\n• for x in users: ...      ← x could be anything\n• for user in users: ...   ← obviously a user',
+    examples: [
+      { note: 'Same loop, three different names — all behave identically:', code: 'sales = [10, 20]\nfor x in sales: print(x)\nfor s in sales: print(s)\nfor banana in sales: print(banana)\n# each version prints 10 then 20' },
+      { note: 'A descriptive name makes the body obvious:', code: 'users = ["alice", "bob"]\nfor user in users:\n    print(user, "is active")\n# alice is active\n# bob is active' },
+    ],
     glossary: [
       { term: 'naming convention', defn: 'choosing descriptive names like price, user, row' },
       { term: 'temporary scope', defn: 'the loop variable only exists during the loop' },
@@ -1039,7 +1043,12 @@ const CONCEPTS = {
     topic: 'compare',
     pandas_progress: 62,
     why_pandas: 'pandas filtering uses ==. df[df["country"] == "TH"] is the most common pandas pattern in the world. Get this wrong and your filter returns nothing.',
-    what: 'Single = stores a value (age = 30 means "put 30 into age"). Double == asks a question (age == 30 means "is age equal to 30?"). The result of == is True or False.',
+    what: 'Single = STORES a value: age = 30 means "put 30 into age".\nDouble == ASKS a question: age == 30 means "is age equal to 30?" — and the answer is True or False.\n\nThat True/False is the whole point: it is what powers filters and if-statements.',
+    examples: [
+      { note: '= stores, == asks:', code: 'age = 30          # store 30 in age\nprint(age == 30)  # ask: is it 30? -> True\nprint(age == 25)  # -> False' },
+      { note: 'The comparison family (case and type matter):', code: 'print(10 > 5)        # True\nprint(10 != 5)       # not-equal -> True\nprint("TH" == "th")  # case matters -> False' },
+      { note: 'This is exactly how a pandas filter decides each row:', code: 'prices = [80, 120, 50]\nfor p in prices:\n    print(p, p > 100)\n# 80 False / 120 True / 50 False' },
+    ],
     glossary: [
       { term: 'assignment', defn: '= stores a value into a variable' },
       { term: 'comparison', defn: '== checks if two things are equal' },
@@ -1067,7 +1076,12 @@ const CONCEPTS = {
     topic: 'compare',
     pandas_progress: 68,
     why_pandas: 'pandas filters return a Boolean Series. Knowing True/False is non-negotiable — every filter, every conditional column, every .isnull() returns booleans.',
-    what: 'True and False are the two boolean values. They MUST be capitalized in Python. true (lowercase) is a different thing — Python treats it as a variable name and errors if it does not exist.',
+    what: 'True and False are the only two boolean values, and they MUST be capitalized (lowercase true / false error).\n\nYou combine them with WORDS, not symbols:\n• and → True only if BOTH sides are True\n• or  → True if AT LEAST ONE side is True\n• not → flips True to False and back',
+    examples: [
+      { note: 'and / or / not:', code: 'print(True and False)  # both true? no  -> False\nprint(True or False)   # either true? yes -> True\nprint(not True)        # flip -> False' },
+      { note: 'Comparisons make booleans you can combine:', code: 'age = 20\nprint(age > 18 and age < 65)  # True\nprint(age < 13 or age > 65)   # False' },
+      { note: 'Empty / zero values are "falsy" in an if:', code: 'cart = []\nif cart:\n    print("has items")\nelse:\n    print("empty")   # [] is falsy -> empty' },
+    ],
     glossary: [
       { term: 'boolean', defn: 'a value that is either True or False' },
       { term: 'truthy', defn: 'values that act like True (non-empty, non-zero)' },
@@ -1095,7 +1109,12 @@ const CONCEPTS = {
     topic: 'funcs',
     pandas_progress: 75,
     why_pandas: 'df["price"].apply(my_function) takes a function and runs it on every row. You write the function once, pandas applies it to thousands of rows.',
-    what: 'A function is a named, reusable piece of code. def function_name(param): defines it. return sends a value back. Call it with function_name(value).',
+    what: 'A function is a named, reusable block of code. You DEFINE it once, then CALL it as many times as you like.\n\n  def double(x):     # def NAME(parameter):\n      return x * 2   # return hands a value back\n\n  double(5)          # call it: 5 goes in as x, 10 comes back\n\nKey idea: return gives a value back so you can store and use it. A function with no return hands back None. (print only shows something on screen — it does not return it.)',
+    examples: [
+      { note: 'Define once, call many times:', code: 'def double(x):\n    return x * 2\n\nprint(double(5))   # 10\nprint(double(50))  # 100' },
+      { note: 'return lets you capture the answer:', code: 'def add(a, b):\n    return a + b\n\ntotal = add(2, 3)   # total is 5 — keep using it\nprint(total * 10)   # 50' },
+      { note: 'No return = you get None back:', code: 'def show(x):\n    print(x)        # shows it...\n\nresult = show(7)    # prints 7\nprint(result)       # None (nothing was returned)' },
+    ],
     glossary: [
       { term: 'def', defn: 'keyword to define a function' },
       { term: 'parameter', defn: 'input variable in the function definition' },
@@ -1124,7 +1143,12 @@ const CONCEPTS = {
     topic: 'comp',
     pandas_progress: 82,
     why_pandas: 'List comprehensions ARE the pandas mindset: transform every item in a collection. df["price"] * 1.1 in pandas is [p * 1.1 for p in prices] in Python. Same idea.',
-    what: '[expression for x in list] is a one-line for loop that produces a new list. [x * 2 for x in nums] doubles every number. [x for x in nums if x > 10] filters.',
+    what: 'A list comprehension is a one-line for loop that BUILDS a new list.\n\n  [p * 2 for p in prices]          # transform every item\n  [p for p in prices if p > 100]   # keep only some items\n\nRead it left to right: "give me (expression) for each item in the list (optionally, if condition)." The original list is never changed — you always get a brand new one.',
+    examples: [
+      { note: 'Transform every item:', code: 'prices = [100, 200, 300]\ndoubled = [p * 2 for p in prices]\nprint(doubled)   # [200, 400, 600]' },
+      { note: 'It is just a normal loop, folded into one line:', code: '# this comprehension...\nsquares = [n * n for n in [1, 2, 3]]\n# ...does the same as this loop:\nsquares = []\nfor n in [1, 2, 3]:\n    squares.append(n * n)\nprint(squares)   # [1, 4, 9]' },
+      { note: 'Add an if to filter:', code: 'nums = [5, 12, 8, 20]\nbig = [n for n in nums if n > 10]\nprint(big)   # [12, 20]' },
+    ],
     glossary: [
       { term: 'comprehension', defn: 'compact for-loop that produces a list' },
       { term: 'transform', defn: 'do something to every item' },
@@ -1152,7 +1176,11 @@ const CONCEPTS = {
     topic: 'files',
     pandas_progress: 88,
     why_pandas: 'pandas pd.read_csv(file_path) is built on top of Python file reading. Knowing how files work makes pandas import errors makeable.',
-    what: 'with open(path, "r") as f: reads a file. The "with" makes sure the file closes automatically. f.read() gets all text. f.readlines() gets a list of lines.',
+    what: 'To read a file you OPEN it, READ it, and it closes when you are done. The "with" statement does the closing for you automatically.\n\n  with open("data.txt", "r") as f:   # "r" = read mode\n      text = f.read()                # all the text as one string\n  print(text)\n\n.read() gives the whole file as one string; looping "for line in f" gives one line at a time.',
+    examples: [
+      { note: 'Read the whole file (a data.txt is preloaded here, so this runs):', code: 'with open("data.txt", "r") as f:\n    text = f.read()\nprint(text[:30])   # first 30 characters' },
+      { note: 'Read it line by line:', code: 'with open("data.txt", "r") as f:\n    for line in f:\n        print(line.strip())   # one row at a time' },
+    ],
     glossary: [
       { term: 'open(path, mode)', defn: 'opens a file. mode is "r" read, "w" write, "a" append' },
       { term: 'with statement', defn: 'auto-closes the file when done' },
@@ -1164,13 +1192,13 @@ const CONCEPTS = {
       'Forgetting to close a file leaks memory. ALWAYS use "with".',
     ],
     try_yourself: {
-      prompt: 'Mentally trace this code. What does it do?',
-      starter_py: 'with open("data.txt", "r") as f:\n    text = f.read()\nprint(text[:50])'
+      prompt: 'data.txt is preloaded. Run this to read it, then change the loop so it prints only the FIRST line.',
+      starter_py: 'with open("data.txt", "r") as f:\n    for line in f:\n        print(line.strip())\n# now make it print just the first line'
     },
     try_hints: [
-      'Open in read mode, store contents into text, print first 50 chars.',
-      'It opens data.txt, reads everything, prints the first 50 characters.',
-      'Output depends on the file. If empty: nothing. If contains "hello world": "hello world".',
+      'To stop after the first line, you can break out of the loop.',
+      'with open("data.txt") as f:\n    print(f.readline().strip())   # readline() grabs one line',
+      'First line of the sample file: order_id,amount',
     ],
     example: { schema: 'shopee', sql: '-- pd.read_csv("orders.csv") is the pandas wrapper around this.\n-- Cannot demo file reading in SQL editor.\nSELECT \'pretend this is from a CSV\' AS source;' }
   },
@@ -1180,7 +1208,12 @@ const CONCEPTS = {
     topic: 'imports',
     pandas_progress: 94,
     why_pandas: 'Every pandas script starts with "import pandas as pd". Understanding what this line does is the gateway.',
-    what: '"import pandas" loads the pandas library. "as pd" gives it a short nickname. After this line, you write pd.read_csv(...) instead of pandas.read_csv(...).',
+    what: '"import X" loads a library so you can use its tools. "import X as Y" gives it a short nickname.\n\n  import pandas as pd      # now write pd.read_csv(...) not pandas.read_csv(...)\n  from math import sqrt    # grab just one tool: sqrt(25)\n\n"pd" for pandas is a universal convention — everyone uses it, so stick with it.',
+    examples: [
+      { note: 'Import a whole module and use it:', code: 'import math\nprint(math.sqrt(25))   # 5.0\nprint(math.pi)         # 3.14159...' },
+      { note: 'The "as" nickname (this is THE pandas line):', code: 'import pandas as pd\ndf = pd.DataFrame({"x": [1, 2, 3]})\nprint(df)' },
+      { note: 'Grab just one thing with "from":', code: 'from math import sqrt\nprint(sqrt(81))   # 9.0  (no math. prefix needed)' },
+    ],
     glossary: [
       { term: 'module', defn: 'a file or package of Python code you can import' },
       { term: 'import x', defn: 'load module x' },
@@ -1193,13 +1226,13 @@ const CONCEPTS = {
       'Imports usually go at the top of your file. All of them, together.',
     ],
     try_yourself: {
-      prompt: 'Write the standard one-line import for pandas using its conventional alias.',
-      starter_py: "import math\nprint(math.sqrt(25))\nprint(math.pi)"
+      prompt: 'Run the math import below to see it work, then add the standard pandas import line underneath (conventional two-letter alias).',
+      starter_py: "import math\nprint(math.sqrt(25))\n# add the standard pandas import below:"
     },
     try_hints: [
-      'The convention is two letters.',
+      'The pandas convention is two letters.',
       'import pandas as pd',
-      'After this, pd.DataFrame, pd.read_csv, pd.merge all become available.',
+      'After that line, pd.DataFrame, pd.read_csv, pd.merge all become available.',
     ],
     example: { schema: 'shopee', sql: '-- SQL has no imports — the database engine runs everything.\nSELECT \'imports = python only\' AS note;' }
   },
@@ -1209,7 +1242,12 @@ const CONCEPTS = {
     topic: 'numpy',
     pandas_progress: 100,
     why_pandas: 'pandas is built ON TOP of numpy. Every pandas Series is secretly a numpy array. You do not need to master numpy — but knowing the basics makes pandas debugging much easier.',
-    what: 'numpy gives you fast arrays. import numpy as np. np.array([1, 2, 3]) makes one. Math operations apply to every element at once: arr * 2 doubles every value.',
+    what: 'numpy gives you a fast ARRAY — like a list, but built for math.\n\n  import numpy as np\n  arr = np.array([1, 2, 3])\n  arr * 2          # -> array([2, 4, 6])  (every element at once)\n\nThe big idea: math applies to the WHOLE array at once, no loop needed. This is exactly how pandas columns work — a pandas Series is a numpy array underneath.',
+    examples: [
+      { note: 'Whole-array math (no loop):', code: 'import numpy as np\narr = np.array([10, 20, 30])\nprint(arr * 3)     # [30 60 90]\nprint(arr + 1)     # [11 21 31]' },
+      { note: 'Compare with a plain list (very different!):', code: 'print([1, 2] * 2)               # [1, 2, 1, 2]  (repeats)\nimport numpy as np\nprint(np.array([1, 2]) * 2)     # [2 4]        (doubles)' },
+      { note: 'Quick stats come built in:', code: 'import numpy as np\narr = np.array([10, 20, 30])\nprint(arr.sum(), arr.mean(), arr.max())   # 60 20.0 30' },
+    ],
     glossary: [
       { term: 'array', defn: 'numpy version of a list — same type, fast' },
       { term: 'vectorized', defn: 'operation applies to all elements automatically' },
