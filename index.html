@@ -998,14 +998,16 @@ const CONCEPTS = {
 
   py_08_loops: {
     t: 'Loops — for x in items',
+    t_th: 'ลูป (Loops) — for x in items',
     topic: 'loops',
     pandas_progress: 50,
     why_pandas: 'Pandas hides loops behind .apply() and column operations, but you must understand the underlying for loop first or .apply() is magic.',
     what: 'A "for" loop does ONE thing: it runs the same lines once for every item in a list.\n\nThe shape is:  for p in prices:  followed by an indented body. Read it as plain English: "FOR EACH p IN prices, run the indented lines."\n\nStep by step, for prices = [100, 200, 300]:\n• Round 1 → p = 100, the body runs with p as 100\n• Round 2 → p = 200, the body runs again\n• Round 3 → p = 300, the body runs once more\n• the list is finished → the loop stops\n\nThe name "p" is yours to pick: "for price in prices" and "for x in prices" do exactly the same thing. It is just a fresh label holding the current item on each round.',
+    what_th: 'ลูป "for" ทำสิ่งเดียว: รันโค้ดบรรทัดเดิมซ้ำ หนึ่งครั้งต่อสมาชิกหนึ่งตัวในลิสต์\n\nรูปแบบคือ:  for p in prices:  ตามด้วยบอดี้ที่ย่อหน้า อ่านเป็นภาษาคนว่า "สำหรับ p แต่ละตัวใน prices ให้รันบรรทัดที่ย่อหน้า"\n\nทีละขั้น สำหรับ prices = [100, 200, 300]:\n• รอบที่ 1 → p = 100 บอดี้รันโดย p เป็น 100\n• รอบที่ 2 → p = 200 บอดี้รันอีกครั้ง\n• รอบที่ 3 → p = 300 บอดี้รันครั้งสุดท้าย\n• ลิสต์หมด → ลูปหยุด\n\nชื่อ "p" คุณตั้งเองได้: "for price in prices" กับ "for x in prices" ทำงานเหมือนกันทุกอย่าง มันเป็นแค่ป้ายชื่อชั่วคราวที่เก็บสมาชิกตัวปัจจุบันในแต่ละรอบ',
     examples: [
-      { note: '1. The basic shape — print every item:', code: 'prices = [100, 200, 300]\nfor p in prices:\n    print(p)\n# 100\n# 200\n# 300' },
-      { note: '2. Do real work in the body — keep a running total:', code: 'prices = [100, 200, 300]\ntotal = 0\nfor p in prices:\n    total = total + p     # this line runs 3 times\nprint(total)              # 600' },
-      { note: '3. You can loop over any list, even words:', code: 'countries = ["TH", "ID", "VN"]\nfor c in countries:\n    print("Active in", c)\n# Active in TH\n# Active in ID\n# Active in VN' },
+      { note: '1. The basic shape — print every item:', note_th: '1. รูปแบบพื้นฐาน — พิมพ์ทุกตัว:', code: 'prices = [100, 200, 300]\nfor p in prices:\n    print(p)\n# 100\n# 200\n# 300' },
+      { note: '2. Do real work in the body — keep a running total:', note_th: '2. ทำงานจริงในบอดี้ — เก็บผลรวมสะสม:', code: 'prices = [100, 200, 300]\ntotal = 0\nfor p in prices:\n    total = total + p     # this line runs 3 times\nprint(total)              # 600' },
+      { note: '3. You can loop over any list, even words:', note_th: '3. ลูปกับลิสต์อะไรก็ได้ แม้แต่คำ:', code: 'countries = ["TH", "ID", "VN"]\nfor c in countries:\n    print("Active in", c)\n# Active in TH\n# Active in ID\n# Active in VN' },
     ],
     glossary: [
       { term: 'for', defn: 'starts the loop' },
@@ -1022,6 +1024,7 @@ const CONCEPTS = {
     ],
     try_yourself: {
       prompt: '🛒 It is Shopee 11.11 night — everything is 20% off. `prices` holds the original prices. Loop through them and print each SALE price (80% of the original), one per line. The ops team is watching the live feed.',
+      prompt_th: '🛒 คืนนี้เป็นวัน 11.11 ของ Shopee ทุกอย่างลด 20% — `prices` คือราคาเต็ม ให้วนลูปแล้วพิมพ์ "ราคาขาย" ของแต่ละชิ้น (80% ของราคาเต็ม) บรรทัดละหนึ่งราคา ทีมปฏิบัติการกำลังดูฟีดสดอยู่',
       starter_py: 'prices = [100, 250, 80, 500]\n\n# loop through prices and print each sale price (price * 0.8):\n',
       expect: { stdout: ['80.0', '200.0', '64.0', '400.0'], miss: 'Each sale price is the original * 0.8. Loop over prices and print(p * 0.8) for each one.' },
       walkthrough: [
@@ -1029,12 +1032,23 @@ const CONCEPTS = {
         'You need to do this for EVERY item, so use a loop: for p in prices: — p becomes 100, then 250, then 80, then 500, one at a time.',
         'Inside the loop (indented 4 spaces), do the math and print it in one line: print(p * 0.8).',
         'Put it together:\n  for p in prices:\n      print(p * 0.8)\nRun it — you should see 80.0, 200.0, 64.0, 400.0, one per line.',
+      ],
+      walkthrough_th: [
+        'เป้าหมาย: สำหรับทุกราคา ให้พิมพ์ราคาที่ลด 20% — "ลด 20%" หมายความว่าเหลือ 80% ดังนั้นราคาขาย = price * 0.8',
+        'ต้องทำกับ "ทุก" ตัว จึงใช้ลูป: for p in prices: — p จะกลายเป็น 100, แล้ว 250, แล้ว 80, แล้ว 500 ทีละตัว',
+        'ในลูป (ย่อหน้า 4 ช่อง) คำนวณแล้วพิมพ์ในบรรทัดเดียว: print(p * 0.8)',
+        'รวมกัน:\n  for p in prices:\n      print(p * 0.8)\nรันดู จะเห็น 80.0, 200.0, 64.0, 400.0 บรรทัดละหนึ่งค่า',
       ]
     },
     try_hints: [
       'Loop with for, and do the math inside the body: print(p * 0.8)',
       'for p in prices:\n    print(p * 0.8)',
       'Output: 80.0, 200.0, 64.0, 400.0 — each on its own line.',
+    ],
+    try_hints_th: [
+      'วนลูปด้วย for แล้วคำนวณในบอดี้: print(p * 0.8)',
+      'for p in prices:\n    print(p * 0.8)',
+      'ผลลัพธ์: 80.0, 200.0, 64.0, 400.0 — บรรทัดละหนึ่งค่า',
     ],
     example: { schema: 'shopee', sql: '-- SQL "loops" automatically over rows.\nSELECT order_amount FROM orders_regional LIMIT 5;' }
   },
@@ -2669,6 +2683,30 @@ function permute(arr) {
   arr.forEach((v, i) => { for (const p of permute([...arr.slice(0, i), ...arr.slice(i + 1)])) res.push([v, ...p]); });
   return res;
 }
+// ── i18n (TH / EN) ───────────────────────────────────────────────────────
+// Code and pandas terms stay English; explanations/scenarios/hints translate.
+// __uiLang is set once at the top of <App> render, so helpers read it freely.
+let __uiLang = 'en';
+function tf(obj, field) {
+  if (!obj) return '';
+  if (__uiLang === 'th' && obj[field + '_th'] != null) return obj[field + '_th'];
+  return obj[field];
+}
+function tlist(obj, field) {
+  if (!obj) return [];
+  if (__uiLang === 'th' && Array.isArray(obj[field + '_th'])) return obj[field + '_th'];
+  return obj[field] || [];
+}
+const UI_TH = {
+  'What it does': 'มันทำอะไร', 'Worked examples': 'ตัวอย่างที่ทำให้ดู', 'Try this yourself': 'ลองทำเอง',
+  'Rules & gotchas': 'กฎและจุดพลาดบ่อย', 'Need a Hint?': 'ต้องการคำใบ้?', 'Why pandas needs this': 'ทำไม pandas ต้องใช้สิ่งนี้',
+  'Check answer': 'ตรวจคำตอบ', 'Run Code': 'รันโค้ด', 'Submit': 'ส่งคำตอบ', 'Reset': 'รีเซ็ต',
+  'Back': 'ย้อนกลับ', 'Skip': 'ข้าม', 'Next lesson': 'บทเรียนถัดไป', 'Hide hints': 'ซ่อนคำใบ้',
+  'Hide walkthrough': 'ซ่อนคำอธิบาย', '🧭 Stuck? Walk me through it': '🧭 ติดอยู่ใช่ไหม? ให้อธิบายทีละขั้น',
+  'Nudge': 'ใบ้เบาๆ', 'Bigger hint': 'ใบ้มากขึ้น', 'Answer': 'เฉลย', 'LESSONS': 'บทเรียน',
+  '✓ Nice — that works.': '✓ เยี่ยม ใช้ได้แล้ว',
+};
+function UI(s) { return (__uiLang === 'th' && UI_TH[s]) ? UI_TH[s] : s; }
 // True if `user` holds the same data as `exp`, independent of ROW order,
 // COLUMN order, and trivial numeric formatting. Column count <= ~6 so trying
 // every column permutation is cheap — this is what makes the grader open to
@@ -2922,27 +2960,27 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
       {/* Why pandas / why charting needs this */}
       {(q.why_pandas || q.why_chart) && (
         <section className="mb-5 bg-amber-50 border border-amber-200 rounded p-3">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mb-1">{q.why_pandas ? 'Why pandas needs this' : 'Why charting needs this'}</div>
-          <p className="text-sm text-amber-900 leading-relaxed">{q.why_pandas || q.why_chart}</p>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mb-1">{q.why_pandas ? UI('Why pandas needs this') : 'Why charting needs this'}</div>
+          <p className="text-sm text-amber-900 leading-relaxed">{q.why_pandas ? tf(q, 'why_pandas') : q.why_chart}</p>
         </section>
       )}
 
       {/* What it does */}
       {q.what && (
         <section className="mb-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">What it does</h3>
-          <p className="text-slate-700 leading-relaxed whitespace-pre-line">{q.what}</p>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">{UI('What it does')}</h3>
+          <p className="text-slate-700 leading-relaxed whitespace-pre-line">{tf(q, 'what')}</p>
         </section>
       )}
 
       {/* Worked examples */}
       {q.examples && q.examples.length > 0 && (
         <section className="mb-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Worked examples</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">{UI('Worked examples')}</h3>
           <div className="space-y-2.5">
             {q.examples.map((ex, i) => (
               <div key={i}>
-                {ex.note && <p className="text-xs text-slate-600 mb-1">{ex.note}</p>}
+                {ex.note && <p className="text-xs text-slate-600 mb-1">{tf(ex, 'note')}</p>}
                 <pre className="bg-slate-900 text-slate-100 rounded p-2.5 text-xs code whitespace-pre-wrap leading-relaxed">{ex.code}</pre>
               </div>
             ))}
@@ -3013,7 +3051,7 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
       {!compact && (q.rules || q.gotchas) && (
         <section className="mb-5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-red-700 mb-2 flex items-center gap-1">
-            <Icon name="warn" className="w-3 h-3"/> Rules &amp; gotchas
+            <Icon name="warn" className="w-3 h-3"/> {UI('Rules & gotchas')}
           </h3>
           <ul className="text-sm text-slate-800 space-y-1">
             {(q.rules || q.gotchas).map((r, i) => (
@@ -3026,8 +3064,8 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
       {/* Try yourself (Python lessons) */}
       {q.try_yourself && (
         <section className="mb-5 bg-lotus-green/25 border border-lotus-green rounded p-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-lotus-brown mb-2">Try this yourself</h3>
-          <p className="text-sm text-slate-800 leading-relaxed mb-2">{q.try_yourself.prompt}</p>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-lotus-brown mb-2">{UI('Try this yourself')}</h3>
+          <p className="text-sm text-slate-800 leading-relaxed mb-2">{tf(q.try_yourself, 'prompt')}</p>
           {q.try_yourself.starter_py && (
             <pre className="bg-slate-900 text-slate-100 rounded p-2.5 text-xs code whitespace-pre-wrap leading-relaxed mb-2">{q.try_yourself.starter_py}</pre>
           )}
@@ -3046,10 +3084,10 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
               )}
               {hintLevel > 0 && (
                 <ul className="mt-2 space-y-1">
-                  {q.try_hints.slice(0, hintLevel).map((h, i) => (
+                  {tlist(q, 'try_hints').slice(0, hintLevel).map((h, i) => (
                     <li key={i} className="text-xs text-slate-700 bg-white border border-slate-200 rounded px-2.5 py-1.5">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mr-1.5">
-                        {i === 0 ? 'Nudge' : i === q.try_hints.length - 1 ? 'Answer' : 'Bigger hint'}
+                        {i === 0 ? UI('Nudge') : i === q.try_hints.length - 1 ? UI('Answer') : UI('Bigger hint')}
                       </span>
                       {h}
                     </li>
@@ -3062,11 +3100,11 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
             <div className="mt-3 pt-3 border-t border-slate-200">
               <button onClick={() => setShowWalk(!showWalk)}
                 className="text-[11px] font-semibold text-lotus-brown hover:underline">
-                {showWalk ? 'Hide walkthrough' : '🧭 Stuck? Walk me through it'}
+                {showWalk ? UI('Hide walkthrough') : UI('🧭 Stuck? Walk me through it')}
               </button>
               {showWalk && (
                 <ol className="mt-2 space-y-1.5 list-decimal list-inside">
-                  {q.try_yourself.walkthrough.map((step, i) => (
+                  {tlist(q.try_yourself, 'walkthrough').map((step, i) => (
                     <li key={i} className="text-xs text-slate-700 bg-white border border-slate-200 rounded px-2.5 py-1.5 leading-relaxed whitespace-pre-line">{step}</li>
                   ))}
                 </ol>
@@ -3088,7 +3126,7 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
 }
 
 
-function Header({ q, idx, total, solved, seconds }) {
+function Header({ q, idx, total, solved, seconds, uiLang, toggleLang }) {
   const isConcept = q.type === 'concept';
   const meta = isConcept ? null : SCHEMAS[q.sch];
   return (
@@ -3111,10 +3149,13 @@ function Header({ q, idx, total, solved, seconds }) {
             </>
           )}
         </div>
-        <h1 className="font-bold text-slate-900 leading-tight">{q.t}</h1>
+        <h1 className="font-bold text-slate-900 leading-tight">{tf(q, 't')}</h1>
         <p className="text-xs text-slate-500">Task <span className="font-semibold text-slate-700">{idx+1} of {total}</span> · <span className="text-emerald-600 font-semibold">{solved} Solved</span></p>
       </div>
       <div className="flex items-center gap-3">
+        <button onClick={toggleLang} title="Switch language" className="px-2.5 py-1.5 text-xs font-bold border border-slate-300 rounded-full text-slate-700 hover:bg-slate-100">
+          {uiLang === 'en' ? 'ไทย' : 'EN'}
+        </button>
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-sm font-mono font-semibold text-slate-700">
           <Icon name="clock" className="w-4 h-4 text-slate-500"/> {fmtTime(seconds)}
         </div>
@@ -3157,7 +3198,7 @@ function ProblemPanel({ q, hintOpen, setHintOpen, showPandas, setShowPandas }) {
       )}
 
       <button onClick={() => setHintOpen(!hintOpen)} className="flex items-center gap-1.5 text-purple-600 hover:text-purple-800 font-medium text-sm mb-4">
-        <Icon name="bulb" className="w-4 h-4"/> Need a Hint?
+        <Icon name="bulb" className="w-4 h-4"/> {UI('Need a Hint?')}
       </button>
       {hintOpen && (
         <div className="bg-purple-50 border-l-4 border-purple-400 text-purple-900 text-sm p-3 rounded mb-5">{q.hint}</div>
@@ -3247,7 +3288,7 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
           <div className="flex items-center gap-2">
             <span className="px-2 py-1 text-[10px] font-mono rounded bg-slate-900 text-white">pandas</span>
             <button onClick={onReset} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800">
-              <Icon name="refresh" className="w-3.5 h-3.5"/> Reset
+              <Icon name="refresh" className="w-3.5 h-3.5"/> {UI('Reset')}
             </button>
           </div>
         </div>
@@ -3261,19 +3302,19 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
         <div className="px-3 py-2.5 border-t border-slate-200 flex items-center justify-end gap-2 flex-wrap bg-slate-50 rounded-b-lg">
           <button onClick={onBack} disabled={!canBack}
             className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-lg text-slate-700 hover:bg-white disabled:opacity-40">
-            <Icon name="skipBack" className="w-3.5 h-3.5"/> Back
+            <Icon name="skipBack" className="w-3.5 h-3.5"/> {UI('Back')}
           </button>
           <button onClick={onSkip}
             className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-lg text-slate-700 hover:bg-white">
-            <Icon name="skipFwd" className="w-3.5 h-3.5"/> Skip
+            <Icon name="skipFwd" className="w-3.5 h-3.5"/> {UI('Skip')}
           </button>
           <button onClick={onRun}
             className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-lg text-slate-700 hover:bg-white">
-            <Icon name="play" className="w-3.5 h-3.5"/> Run Code
+            <Icon name="play" className="w-3.5 h-3.5"/> {UI('Run Code')}
           </button>
           <button onClick={onSubmit}
             className={`flex items-center gap-1.5 px-4 py-2 text-sm ${isConcept ? 'bg-purple-600 hover:bg-purple-700' : ACCENT_BTN[meta.accent]} text-white rounded-lg font-semibold shadow-sm`}>
-            <Icon name={isConcept ? "check" : "send"} className="w-3.5 h-3.5"/> {isConcept ? "Check answer" : "Submit"}
+            <Icon name={isConcept ? "check" : "send"} className="w-3.5 h-3.5"/> {isConcept ? UI('Check answer') : UI('Submit')}
           </button>
         </div>
       </div>
@@ -3313,8 +3354,8 @@ function QueryArea({ q, isConcept, activeSchema, code, setCode, onRun, onSubmit,
             <div className={`mt-3 p-3 rounded border ${conceptResult.pass ? 'bg-emerald-900/40 border-emerald-600 text-emerald-200' : 'bg-red-900/30 border-red-700 text-red-200'}`}>
               {conceptResult.pass ? (
                 <>
-                  <div className="font-bold mb-2">✓ Nice — that works.</div>
-                  <button onClick={onAdvance} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 rounded text-xs font-semibold flex items-center gap-1 text-white"><Icon name="chevronRight" className="w-3 h-3"/> Next lesson</button>
+                  <div className="font-bold mb-2">{UI('✓ Nice — that works.')}</div>
+                  <button onClick={onAdvance} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 rounded text-xs font-semibold flex items-center gap-1 text-white"><Icon name="chevronRight" className="w-3 h-3"/> {UI('Next lesson')}</button>
                 </>
               ) : (
                 <div className="text-sm">✗ {conceptResult.why}</div>
@@ -3660,6 +3701,9 @@ function App() {
   const [language, setLanguage] = useState('python');
   const [submitState, setSubmitState] = useState(null);
   const [expectedResults, setExpectedResults] = useState({});
+  const [uiLang, setUiLang] = useState(() => { try { return localStorage.getItem('ui_lang') || 'en'; } catch { return 'en'; } });
+  const toggleLang = () => { const nl = uiLang === 'en' ? 'th' : 'en'; setUiLang(nl); try { localStorage.setItem('ui_lang', nl); } catch {} };
+  __uiLang = uiLang;
 
   const q = TASKS[state.idx];
   const isConcept = q.type === 'concept';
@@ -3949,7 +3993,7 @@ __cap()
     <div className="h-screen flex bg-slate-50 overflow-hidden">
       <Sidebar idx={state.idx} setIdx={setIdx} solved={state.solved}/>
       <div className="flex-1 flex flex-col min-w-0">
-        <Header q={q} idx={state.idx} total={TASKS.length} solved={state.solved.size} seconds={seconds}/>
+        <Header q={q} idx={state.idx} total={TASKS.length} solved={state.solved.size} seconds={seconds} uiLang={uiLang} toggleLang={toggleLang}/>
         <div className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0">
           <div className={(q.pandas_progress !== undefined || q.chart_progress !== undefined || q.cat === 'setup' ? "col-span-7 " : "col-span-4 ") + "bg-white border border-slate-200 rounded-lg flex flex-col min-h-0 shadow-sm"}>
             <div className="border-b border-slate-200 flex">
