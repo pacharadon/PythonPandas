@@ -854,7 +854,13 @@ const CONCEPTS = {
     try_yourself: {
       prompt: '🥬 Freshket received an order total from a supplier feed as TEXT: sale = "200". Add a 50 THB delivery fee and print the grand total — but text plus a number breaks, so convert it to a number first.',
       starter_py: 'sale = "200"\n\n# convert sale to a number, add 50, and print the total:\n',
-      expect: { stdout: ['250'], miss: 'Wrap int() (or float()) around sale before adding: int(sale) + 50.' }
+      expect: { stdout: ['250'], miss: 'Wrap int() (or float()) around sale before adding: int(sale) + 50.' },
+      walkthrough: [
+        'The problem: sale is the TEXT "200", and text + a number does not work in Python.',
+        'Convert the text to a number first with int(): int(sale) gives the number 200.',
+        'Now you can add the 50 THB delivery fee: int(sale) + 50.',
+        'Print it: print(int(sale) + 50) — Output: 250.',
+      ]
     },
     try_hints: [
       'int("200") turns the text into the number 200.',
@@ -974,7 +980,13 @@ const CONCEPTS = {
     try_yourself: {
       prompt: '📦 A support ticket just landed about this Shopee user, and the agent needs three facts fast. From the `user` record below, print the country, then the user id, then whether the account is active — one per line, so the agent can read them at a glance.',
       starter_py: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\n\n# print the country, then the id, then the active status:\n',
-      expect: { stdout: ['TH', '101', 'True'], miss: 'Look up each value by its key: user["country"], user["id"], user["active"] — and print all three.' }
+      expect: { stdout: ['TH', '101', 'True'], miss: 'Look up each value by its key: user["country"], user["id"], user["active"] — and print all three.' },
+      walkthrough: [
+        'You are pulling three facts OUT of the user dictionary: country, id, and active.',
+        'To read a value from a dictionary, use square brackets with the key in quotes: user["country"] gives back "TH".',
+        'Do the same for the other two keys: user["id"] and user["active"].',
+        'Print each one so the agent sees all three:\n  print(user["country"])\n  print(user["id"])\n  print(user["active"])\nOutput: TH, 101, True.',
+      ]
     },
     try_hints: [
       'Square brackets with the key name in quotes: user["country"].',
@@ -1011,7 +1023,13 @@ const CONCEPTS = {
     try_yourself: {
       prompt: '🛒 It is Shopee 11.11 night — everything is 20% off. `prices` holds the original prices. Loop through them and print each SALE price (80% of the original), one per line. The ops team is watching the live feed.',
       starter_py: 'prices = [100, 250, 80, 500]\n\n# loop through prices and print each sale price (price * 0.8):\n',
-      expect: { stdout: ['80.0', '200.0', '64.0', '400.0'], miss: 'Each sale price is the original * 0.8. Loop over prices and print(p * 0.8) for each one.' }
+      expect: { stdout: ['80.0', '200.0', '64.0', '400.0'], miss: 'Each sale price is the original * 0.8. Loop over prices and print(p * 0.8) for each one.' },
+      walkthrough: [
+        'The goal: for every price, print it at 20% off. "20% off" means you keep 80%, so a sale price is price * 0.8.',
+        'You need to do this for EVERY item, so use a loop: for p in prices: — p becomes 100, then 250, then 80, then 500, one at a time.',
+        'Inside the loop (indented 4 spaces), do the math and print it in one line: print(p * 0.8).',
+        'Put it together:\n  for p in prices:\n      print(p * 0.8)\nRun it — you should see 80.0, 200.0, 64.0, 400.0, one per line.',
+      ]
     },
     try_hints: [
       'Loop with for, and do the math inside the body: print(p * 0.8)',
@@ -1143,7 +1161,13 @@ const CONCEPTS = {
     try_yourself: {
       prompt: '💸 Shopee takes a 3% commission on every seller sale. Write a function `commission(amount)` that RETURNS 3% of the amount (return it, do not print inside). Then print the commission on a 1000 THB sale and on a 2500 THB sale.',
       starter_py: '# write commission(amount) so it returns amount * 0.03\n\n\n# then print the commission on a 1000 sale and a 2500 sale:\n',
-      expect: { stdout: ['30.0', '75.0'], miss: 'Define commission(amount) with "return amount * 0.03", then print(commission(1000)) and print(commission(2500)).' }
+      expect: { stdout: ['30.0', '75.0'], miss: 'Define commission(amount) with "return amount * 0.03", then print(commission(1000)) and print(commission(2500)).' },
+      walkthrough: [
+        'First DEFINE the rule once as a function. "3% of the amount" is amount * 0.03.',
+        'Use def, and return the value (not print) so it comes back to be used:\n  def commission(amount):\n      return amount * 0.03',
+        'Now CALL it with each sale and print the result:\n  print(commission(1000))\n  print(commission(2500))',
+        'Run it — you get 30.0 and 75.0. (If you had used print inside the function instead of return, calling it would hand back None.)',
+      ]
     },
     try_hints: [
       'def NAME(param): return EXPRESSION — and use return, not print, inside the function.',
@@ -2841,6 +2865,7 @@ function Sidebar({ idx, setIdx, solved }) {
 function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
   const [compact, setCompact] = useState(() => localStorage.getItem('lesson_compact') === '1');
   const [hintLevel, setHintLevel] = useState(0);
+  const [showWalk, setShowWalk] = useState(false);
   const exampleSchema = (q.example && q.example.schema) || 'shopee';
   const progressInfo = q.pandas_progress !== undefined
     ? { pct: q.pandas_progress, label: 'Pandas readiness' }
@@ -3030,6 +3055,21 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
                     </li>
                   ))}
                 </ul>
+              )}
+            </div>
+          )}
+          {q.try_yourself.walkthrough && q.try_yourself.walkthrough.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-slate-200">
+              <button onClick={() => setShowWalk(!showWalk)}
+                className="text-[11px] font-semibold text-lotus-brown hover:underline">
+                {showWalk ? 'Hide walkthrough' : '🧭 Stuck? Walk me through it'}
+              </button>
+              {showWalk && (
+                <ol className="mt-2 space-y-1.5 list-decimal list-inside">
+                  {q.try_yourself.walkthrough.map((step, i) => (
+                    <li key={i} className="text-xs text-slate-700 bg-white border border-slate-200 rounded px-2.5 py-1.5 leading-relaxed whitespace-pre-line">{step}</li>
+                  ))}
+                </ol>
               )}
             </div>
           )}
