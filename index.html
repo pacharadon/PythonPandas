@@ -977,25 +977,33 @@ const CONCEPTS = {
     topic: 'loops',
     pandas_progress: 50,
     why_pandas: 'Pandas hides loops behind .apply() and column operations, but you must understand the underlying for loop first or .apply() is magic.',
-    what: 'for x in sales: means "take each item from sales, temporarily call it x, do something." Read it as English: FOR EACH item IN sales.',
+    what: 'A "for" loop does ONE thing: it runs the same lines once for every item in a list.\n\nThe shape is:  for p in prices:  followed by an indented body. Read it as plain English: "FOR EACH p IN prices, run the indented lines."\n\nStep by step, for prices = [100, 200, 300]:\n• Round 1 → p = 100, the body runs with p as 100\n• Round 2 → p = 200, the body runs again\n• Round 3 → p = 300, the body runs once more\n• the list is finished → the loop stops\n\nThe name "p" is yours to pick: "for price in prices" and "for x in prices" do exactly the same thing. It is just a fresh label holding the current item on each round.',
+    examples: [
+      { note: '1. The basic shape — print every item:', code: 'prices = [100, 200, 300]\nfor p in prices:\n    print(p)\n# 100\n# 200\n# 300' },
+      { note: '2. Do real work in the body — keep a running total:', code: 'prices = [100, 200, 300]\ntotal = 0\nfor p in prices:\n    total = total + p     # this line runs 3 times\nprint(total)              # 600' },
+      { note: '3. You can loop over any list, even words:', code: 'countries = ["TH", "ID", "VN"]\nfor c in countries:\n    print("Active in", c)\n# Active in TH\n# Active in ID\n# Active in VN' },
+    ],
     glossary: [
-      { term: 'iteration', defn: 'going through items one at a time' },
-      { term: 'iterable', defn: 'anything you can loop over (list, dict, string)' },
-      { term: 'loop variable', defn: 'the x in "for x in" — a temporary name' },
+      { term: 'for', defn: 'starts the loop' },
+      { term: 'in', defn: 'links your loop variable to the list you want to walk' },
+      { term: 'loop variable', defn: 'the p in "for p in" — holds the current item each round; you choose the name' },
+      { term: 'loop body', defn: 'the indented line(s) that run once per item' },
+      { term: 'iteration', defn: 'one round of the loop (one item)' },
     ],
     gotchas: [
-      'The colon at the end of "for x in sales:" is required.',
-      'The body of the loop must be indented (4 spaces is standard).',
-      'Modifying a list while looping over it leads to bugs. Make a copy first.',
+      'The colon at the end of "for p in prices:" is required.',
+      'The body MUST be indented (4 spaces). No indent → IndentationError.',
+      'The loop variable is just a name you choose — for p / for x / for price all behave the same.',
+      'The body runs once per item: a 3-item list runs it 3 times.',
     ],
     try_yourself: {
-      prompt: 'Given prices = [100, 200, 300], use a loop to print each price.',
-      starter_py: 'prices = [100, 200, 300]\n# for ... in ...:\n#     print(...)'
+      prompt: 'Two parts: (1) loop over prices and print each price. (2) Then add 10% — print each price * 1.1 (so 100 becomes 110.0).',
+      starter_py: 'prices = [100, 200, 300]\n\n# Part 1 — print each price:\n# for ... in ...:\n#     print(...)\n\n# Part 2 — print each price plus 10% (price * 1.1):'
     },
     try_hints: [
-      'Pattern: for VAR in LIST: print(VAR)',
-      'for p in prices:\n    print(p)',
-      'Output: 100, 200, 300 (each on its own line).',
+      'Part 1 pattern: for VAR in LIST: print(VAR)',
+      'for p in prices:\n    print(p)\n# Part 2 body: print(p * 1.1)',
+      'Part 1 prints 100, 200, 300. Part 2 prints 110.0, 220.0, 330.0 (each on its own line).',
     ],
     example: { schema: 'shopee', sql: '-- SQL "loops" automatically over rows.\nSELECT order_amount FROM orders_regional LIMIT 5;' }
   },
@@ -2829,7 +2837,22 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
       {q.what && (
         <section className="mb-5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">What it does</h3>
-          <p className="text-slate-700 leading-relaxed">{q.what}</p>
+          <p className="text-slate-700 leading-relaxed whitespace-pre-line">{q.what}</p>
+        </section>
+      )}
+
+      {/* Worked examples */}
+      {q.examples && q.examples.length > 0 && (
+        <section className="mb-5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Worked examples</h3>
+          <div className="space-y-2.5">
+            {q.examples.map((ex, i) => (
+              <div key={i}>
+                {ex.note && <p className="text-xs text-slate-600 mb-1">{ex.note}</p>}
+                <pre className="bg-slate-900 text-slate-100 rounded p-2.5 text-xs code whitespace-pre-wrap leading-relaxed">{ex.code}</pre>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
