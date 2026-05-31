@@ -978,7 +978,7 @@ const CONCEPTS = {
       'Keys are usually text; values can be anything — a number, text, True/False, even a list.',
     ],
     try_yourself: {
-      prompt: '📦 A support ticket just landed about this Shopee user, and the agent needs three facts fast. From the `user` record below, print the country, then the user id, then whether the account is active — one per line, so the agent can read them at a glance.',
+      prompt: '📦 A support agent needs three details about this Shopee user. From the `user` dictionary below, print the country, then the user id, then if the account is active — one on each line.',
       starter_py: 'user = {\n    "id": 101,\n    "country": "TH",\n    "active": True\n}\n\n# print the country, then the id, then the active status:\n',
       expect: { stdout: ['TH', '101', 'True'], miss: 'Look up each value by its key: user["country"], user["id"], user["active"] — and print all three.' },
       walkthrough: [
@@ -1023,7 +1023,7 @@ const CONCEPTS = {
       'The body runs once per item: a 3-item list runs it 3 times.',
     ],
     try_yourself: {
-      prompt: '🛒 It is Shopee 11.11 night — everything is 20% off. `prices` holds the original prices. Loop through them and print each SALE price (80% of the original), one per line. The ops team is watching the live feed.',
+      prompt: '🛒 It is Shopee 11.11 sale day. Everything is 20% off. The list `prices` has the normal prices. Use a loop to print each sale price — that is 80% of the normal price — one on each line.',
       prompt_th: '🛒 คืนนี้เป็นวัน 11.11 ของ Shopee ทุกอย่างลด 20% — `prices` คือราคาเต็ม ให้วนลูปแล้วพิมพ์ "ราคาขาย" ของแต่ละชิ้น (80% ของราคาเต็ม) บรรทัดละหนึ่งราคา ทีมปฏิบัติการกำลังดูฟีดสดอยู่',
       starter_py: 'prices = [100, 250, 80, 500]\n\n# loop through prices and print each sale price (price * 0.8):\n',
       expect: { stdout: ['80.0', '200.0', '64.0', '400.0'], miss: 'Each sale price is the original * 0.8. Loop over prices and print(p * 0.8) for each one.' },
@@ -1173,7 +1173,7 @@ const CONCEPTS = {
       'Functions can have default values: def f(x=10): — caller can skip x.',
     ],
     try_yourself: {
-      prompt: '💸 Shopee takes a 3% commission on every seller sale. Write a function `commission(amount)` that RETURNS 3% of the amount (return it, do not print inside). Then print the commission on a 1000 THB sale and on a 2500 THB sale.',
+      prompt: '💸 Shopee takes a 3% fee (a commission) on every sale. Write a function `commission(amount)` that uses return to give back 3% of the amount (use return, not print, inside the function). Then print the fee for a 1000 THB sale and a 2500 THB sale.',
       starter_py: '# write commission(amount) so it returns amount * 0.03\n\n\n# then print the commission on a 1000 sale and a 2500 sale:\n',
       expect: { stdout: ['30.0', '75.0'], miss: 'Define commission(amount) with "return amount * 0.03", then print(commission(1000)) and print(commission(2500)).' },
       walkthrough: [
@@ -1213,7 +1213,7 @@ const CONCEPTS = {
       'A comprehension always returns a NEW list — the original is unchanged.',
     ],
     try_yourself: {
-      prompt: '🏷️ Marketing wants a "members price" in the app: every item at 10% off. Given `prices`, use a LIST COMPREHENSION (one line) to build member_prices — each price times 0.9 — then print the list.',
+      prompt: '🏷️ The shop wants a "member price": every item at 10% off. Using `prices`, make a new list called member_prices with a LIST COMPREHENSION (one line) — each price times 0.9 — then print the list.',
       starter_py: 'prices = [100, 200, 300]\n\n# member_prices = [ ... ]   # each price * 0.9, in one line\n# print(member_prices)\n',
       expect: { stdout: ['90.0', '180.0', '270.0'], miss: 'Build it with [p * 0.9 for p in prices], then print the list.' }
     },
@@ -2699,7 +2699,7 @@ function tlist(obj, field) {
 }
 const UI_TH = {
   'What it does': 'มันทำอะไร', 'Worked examples': 'ตัวอย่างที่ทำให้ดู', 'Try this yourself': 'ลองทำเอง',
-  'Rules & gotchas': 'กฎและจุดพลาดบ่อย', 'Need a Hint?': 'ต้องการคำใบ้?', 'Why pandas needs this': 'ทำไม pandas ต้องใช้สิ่งนี้',
+  'Common mistakes': 'จุดพลาดที่พบบ่อย', 'Need a Hint?': 'ต้องการคำใบ้?', 'Why pandas needs this': 'ทำไม pandas ต้องใช้สิ่งนี้',
   'Check answer': 'ตรวจคำตอบ', 'Run Code': 'รันโค้ด', 'Submit': 'ส่งคำตอบ', 'Reset': 'รีเซ็ต',
   'Back': 'ย้อนกลับ', 'Skip': 'ข้าม', 'Next lesson': 'บทเรียนถัดไป', 'Hide hints': 'ซ่อนคำใบ้',
   'Hide walkthrough': 'ซ่อนคำอธิบาย', '🧭 Stuck? Walk me through it': '🧭 ติดอยู่ใช่ไหม? ให้อธิบายทีละขั้น',
@@ -3051,7 +3051,7 @@ function ConceptPanel({ q, onSkipTopic, hasNextTopic }) {
       {!compact && (q.rules || q.gotchas) && (
         <section className="mb-5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-red-700 mb-2 flex items-center gap-1">
-            <Icon name="warn" className="w-3 h-3"/> {UI('Rules & gotchas')}
+            <Icon name="warn" className="w-3 h-3"/> {UI('Common mistakes')}
           </h3>
           <ul className="text-sm text-slate-800 space-y-1">
             {(q.rules || q.gotchas).map((r, i) => (
