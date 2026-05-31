@@ -725,7 +725,7 @@ const CONCEPTS = {
     topic: 'zero',
     pandas_progress: 7,
     why_pandas: 'Functions you pass to .apply() must indent right. Mess this up and pandas errors with IndentationError.',
-    what: 'Most languages use { } to group code. Python uses indentation — usually 4 spaces. Code with the same indent runs as one block. Mix tabs and spaces and Python freaks out.',
+    what: 'Most languages use { } to group code. Python uses indentation (spaces at the start of a line) — usually 4 spaces. Lines with the same indent run as one block. If you mix tabs and spaces, Python shows an error.',
     glossary: [
       { term: 'indentation', defn: 'the leading spaces on a line' },
       { term: 'block', defn: 'a group of lines with the same indent' },
@@ -752,7 +752,7 @@ const CONCEPTS = {
     t: 'Errors are not fatal — read the LAST line first',
     topic: 'zero',
     pandas_progress: 9,
-    why_pandas: 'pandas errors are notoriously long. Same trick: jump to the bottom. The last line tells you what went wrong; everything above is just where it happened.',
+    why_pandas: 'pandas errors are very long. Use the same trick: read the bottom line first. The last line tells you what went wrong; everything above only shows where it happened.',
     what: 'When Python errors, it prints a "traceback" — a stack of where the error happened. Beginners read top-down and panic. Experts read the LAST line first: it names the error and what triggered it.',
     glossary: [
       { term: 'traceback', defn: 'the multi-line error message' },
@@ -852,7 +852,7 @@ const CONCEPTS = {
       'float("") errors — empty string. You must clean missing values first.',
     ],
     try_yourself: {
-      prompt: '🥬 Freshket received an order total from a supplier feed as TEXT: sale = "200". Add a 50 THB delivery fee and print the grand total — but text plus a number breaks, so convert it to a number first.',
+      prompt: '🥬 Freshket got an order total from a supplier as TEXT: sale = "200". You need to add a 50 THB delivery fee. But text plus a number does not work, so change the text to a number first, then print the total.',
       starter_py: 'sale = "200"\n\n# convert sale to a number, add 50, and print the total:\n',
       expect: { stdout: ['250'], miss: 'Wrap int() (or float()) around sale before adding: int(sale) + 50.' },
       walkthrough: [
@@ -886,7 +886,7 @@ const CONCEPTS = {
       'A list can hold different types: [1, "two", 3.0] is valid.',
     ],
     try_yourself: {
-      prompt: '🌾 A farm weighed five harvest crates this morning (kg): 12, 8, 15, 20, 9. Put them in a list called harvest, then print how many crates there were.',
+      prompt: '🌾 A farm weighed five boxes of vegetables this morning (in kg): 12, 8, 15, 20, 9. Put these numbers in a list called harvest, then print how many boxes there are.',
       starter_py: '# put the five crate weights in a list called harvest\n# then print how many crates there are:\n',
       expect: { stdout: ['5'], miss: 'Make harvest = [12, 8, 15, 20, 9], then print(len(harvest)).' }
     },
@@ -914,7 +914,7 @@ const CONCEPTS = {
       'sales[0] is the FIRST. Coming from Excel? Mentally subtract 1.',
     ],
     try_yourself: {
-      prompt: '🏨 An Agoda booking arrived as a list: booking = ["BK1007", "Marina Bay", 420, "2026-04-10"]. Print the nightly rate (the item at index 2), then the check-in date (the LAST item).',
+      prompt: '🏨 One Agoda booking is stored as a list: booking = ["BK1007", "Marina Bay", 420, "2026-04-10"]. Print the room price (the item at index 2), then the check-in date (the LAST item).',
       starter_py: 'booking = ["BK1007", "Marina Bay", 420, "2026-04-10"]\n\n# print the nightly rate (index 2), then the check-in date (last item):\n',
       expect: { stdout: ['420', '2026-04-10'], miss: 'booking[2] is the rate; booking[-1] is the last item. Print both.' }
     },
@@ -942,7 +942,7 @@ const CONCEPTS = {
       'sales[:] copies the entire list. Useful trick.',
     ],
     try_yourself: {
-      prompt: '🛍️ Lazada ranked its best-sellers (already sorted): sellers = ["Mango", "Rice", "Soap", "Fan", "Lamp"]. The homepage banner only fits the TOP 3 — slice them out and print just those three.',
+      prompt: '🛍️ Lazada has a list of its best-selling products, already in order: sellers = ["Mango", "Rice", "Soap", "Fan", "Lamp"]. The homepage has space for only the TOP 3. Use a slice to take the first three, then print them.',
       starter_py: 'sellers = ["Mango", "Rice", "Soap", "Fan", "Lamp"]\n\n# slice out the top 3 and print them:\n',
       expect: { stdout: ['Mango', 'Rice', 'Soap'], miss: 'sellers[:3] takes the first three. Print that slice.' }
     },
@@ -1072,7 +1072,7 @@ const CONCEPTS = {
       'Single-letter names (i, x, n) are OK for short loops. Longer = use real words.',
     ],
     try_yourself: {
-      prompt: '🥕 Freshket wants a quick stock label for each vegetable. Given veggies = ["kale", "carrot", "basil"], loop through and print "In stock: <name>" for each — and use a readable loop variable name (not x).',
+      prompt: '🥕 Freshket wants to show which vegetables are in stock. With veggies = ["kale", "carrot", "basil"], use a loop to print "In stock: <name>" for each one. Choose a clear name for the loop variable (not x).',
       starter_py: 'veggies = ["kale", "carrot", "basil"]\n\n# loop with a clear variable name and print "In stock: <name>" for each:\n',
       expect: { stdout: ['In stock: kale', 'In stock: carrot', 'In stock: basil'], miss: 'Loop and print the label: for veg in veggies: print("In stock:", veg)' }
     },
@@ -1312,7 +1312,7 @@ const CONCEPTS = {
       'List math: [1, 2] * 2 gives [1, 2, 1, 2]. Numpy math: np.array([1, 2]) * 2 gives [2, 4]. They differ!',
     ],
     try_yourself: {
-      prompt: '🏨 Agoda is applying a 3x peak-season surcharge to its base room rates. Given rates = np.array([100, 150, 200]), multiply the WHOLE array by 3 in one line (no loop) and print it.',
+      prompt: '🏨 In peak season, Agoda makes room prices 3 times higher. With rates = np.array([100, 150, 200]), multiply the WHOLE array by 3 in one line (no loop), then print it.',
       starter_py: 'import numpy as np\nrates = np.array([100, 150, 200])\n\n# multiply the whole array by 3 and print it:\n',
       expect: { stdout: ['300', '450', '600'], miss: 'numpy does whole-array math at once: print(rates * 3).' }
     },
@@ -1328,7 +1328,7 @@ const CONCEPTS = {
 setup: {
   t: 'Setup — Connect Python to a Database (the easy way)',
   what: "Think of pandas as Excel, but inside Python. Think of SQLite as a database that lives in one .db file. This lesson shows you how to open the file, run a SQL query, and get the result back as something you can use — a DataFrame (basically an Excel sheet, but in code).",
-  when: "ONCE at the start of every Python script that touches data. You'll do this so often it becomes muscle memory.",
+  when: "ONCE at the start of every Python script that uses data. You will do this so often that it becomes automatic.",
   tables_involved: "Doesn't matter — pandas reads any table you ask for.",
   written_order: ["1. (one-time, in Terminal):  pip install pandas","2. (in your script):  import pandas as pd","3. (in your script):  import sqlite3","4. conn = sqlite3.connect('shopee.db')","5. df = pd.read_sql('SELECT...', conn)"],
   exec_order: ["1. Install pandas — only ONCE per computer, in Terminal","2. Import the libraries — every script needs this","3. Connect — opens the .db file","4. Run query — get back a DataFrame","5. Look at it — df.head() shows the first 5 rows"],
@@ -1652,7 +1652,7 @@ advanced: {
       { term: 'plot', defn: 'a single chart' },
     ],
     gotchas: [
-      'A chart without a clear question is decoration.',
+      'If you do not have a clear question, a chart is not useful.',
       'Pick the chart AFTER you decide the question. Not before.',
     ],
     try_yourself: {
@@ -1661,7 +1661,7 @@ advanced: {
     },
     try_hints: [
       'Time + numbers = ?',
-      'Line chart. Day on x-axis, orders on y-axis. The spike on day 4 jumps out.',
+      'Line chart. Day on the x-axis, orders on the y-axis. The high point on day 4 is easy to see.',
       'Bar would also work but line is conventional for "over time."',
     ],
     example: { schema: 'shopee', sql: '-- Get the data a chart could plot:\nSELECT order_date, SUM(order_amount) AS daily_total FROM orders_regional GROUP BY order_date ORDER BY order_date LIMIT 7;' }
@@ -1671,7 +1671,7 @@ advanced: {
     t: '4 chart types you will actually use',
     topic: 'charting',
     chart_progress: 16,
-    why_chart: 'Stop chart-shopping. 90% of analyst work uses 4 chart types. Master these; the fancy ones come later.',
+    why_chart: 'Do not spend time choosing between many chart types. 90% of analyst work uses just 4. Learn these first; the rest can come later.',
     what: 'BAR — compare categories (sales by country). LINE — track over time (daily orders). SCATTER — relationship between two numbers (price vs quantity). HISTOGRAM — shape of one number (how is age distributed).',
     glossary: [
       { term: 'categorical', defn: 'a label like country or seller_tier' },
@@ -1756,7 +1756,7 @@ advanced: {
   },
 
   mp_05_label: {
-    t: 'Label every axis — a chart without labels is a lie',
+    t: 'Label every axis',
     topic: 'charting',
     chart_progress: 40,
     why_chart: 'Unlabeled charts are useless. The viewer should not have to ask "what am I looking at?" Three lines fix this forever.',
@@ -1799,7 +1799,7 @@ advanced: {
       'Sort your bars before plotting — usually descending. Random order = harder to read.',
     ],
     try_yourself: {
-      prompt: '🌾 The farm dashboard needs the morning harvest by crop as a bar chart. crops and kg are below — draw the bars, give it a title, and show it.',
+      prompt: '🌾 The farm wants a bar chart of this morning harvest by vegetable. crops and kg are below. Draw the bars, add a title, then show it.',
       starter_py: "import matplotlib.pyplot as plt\ncrops = [\"Rice\", \"Kale\", \"Basil\", \"Chili\"]\nkg = [120, 40, 25, 60]\n\n# draw a bar chart of kg by crop, add a title, then show it:\n",
       expect: { chart: true, miss: 'Use plt.bar(crops, kg), then plt.title(...), then plt.show().' }
     },
@@ -1815,7 +1815,7 @@ advanced: {
     t: 'Scatter — relationship between two numbers',
     topic: 'charting',
     chart_progress: 56,
-    why_chart: 'When you suspect "X drives Y" — like price vs sales — a scatter shows the truth. Each row becomes one dot.',
+    why_chart: 'When you think one number affects another — like price and sales — a scatter chart shows it clearly. Each row becomes one dot.',
     what: 'plt.scatter(xs, ys) plots ONE DOT per pair — xs is the horizontal value, ys the vertical. You read the cloud of dots for a pattern:\n\n  price = [10, 20, 30, 40]\n  qty   = [100, 80, 50, 30]\n  plt.scatter(price, qty)   # each (price, qty) becomes a dot\n\nA downward trend = negative relationship; upward = positive; a shapeless blob = no relationship.',
     glossary: [
       { term: 'scatter', defn: 'one dot per (x, y) pair' },
@@ -1828,7 +1828,7 @@ advanced: {
       'A scatter shows correlation, not causation. Be careful what you claim.',
     ],
     try_yourself: {
-      prompt: '🏨 Agoda suspects higher room rates mean fewer rooms booked. rate and rooms_booked are below — make a scatter (rate on x, rooms on y), label both axes, and show it. Does the cloud trend down?',
+      prompt: '🏨 Agoda thinks higher room prices mean fewer rooms are booked. rate and rooms_booked are below. Make a scatter chart (rate on x, rooms on y), label both axes, then show it. Do the dots go down?',
       starter_py: "import matplotlib.pyplot as plt\nrate = [80, 120, 160, 200, 240]\nrooms_booked = [95, 70, 55, 30, 18]\n\n# scatter rate vs rooms_booked, label both axes, then show it:\n",
       expect: { chart: true, miss: 'plt.scatter(rate, rooms_booked), then plt.xlabel/ylabel, then plt.show().' }
     },
@@ -1857,7 +1857,7 @@ advanced: {
       'Outliers stretch the x-axis. Filter or use percentile clipping if needed.',
     ],
     try_yourself: {
-      prompt: '🛍️ Lazada wants the shape of order sizes from the last hour (THB) — mostly small with a few big ones? amts is below. Plot a histogram with 10 bins, title it, and show it.',
+      prompt: '🛍️ Lazada wants to see the shape of order sizes from the last hour (THB). Are most orders small, with only a few big ones? amts is below. Make a histogram with 10 bins, add a title, then show it.',
       starter_py: "import matplotlib.pyplot as plt\namts = [10, 12, 15, 18, 20, 22, 25, 30, 35, 100, 200]\n\n# plot a histogram of amts with 10 bins, add a title, then show it:\n",
       expect: { chart: true, miss: 'plt.hist(amts, bins=10), then plt.title(...), then plt.show().' }
     },
